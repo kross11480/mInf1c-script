@@ -3,5 +3,10 @@
 
 format: jb-book
 root: intro
-chapters:
-- file: test_upython
+parts:
+  - caption: Introduction
+    chapters:
+    - file: Kapitel/01/Tools
+      sections:
+      - file: Kapitel/01/WhyEmbedded
+      - file: test_upython

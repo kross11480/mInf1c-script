@@ -3,7 +3,7 @@
 
 title: Embedded Systems
 author: Hritam Dutta
-logo: file:///Users/duttahr/Downloads/Ohm_Wort-Bild-Marke_RGB_Schutzzone.svg
+logo: logo.png
 
 # Force re-execution of notebooks on each build.
 # See https://jupyterbook.org/content/execute.html
