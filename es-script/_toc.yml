@@ -3,10 +3,13 @@
 
 format: jb-book
 root: intro
-parts:
-  - caption: Introduction
-    chapters:
-    - file: Kapitel/01/Tools
-      sections:
-      - file: Kapitel/01/WhyEmbedded
-      - file: test_upython
+options:  # The options key will be applied to all chapters, but not sub-sections
+  numbered: True
+chapters:
+  - file: Kapitel/01/Tools
+    sections:
+    - file: Kapitel/01/WhyEmbedded
+    - file: test_upython
+  - file: Kapitel/Exercise/Praktika.md
+    sections:
+    - file: Kapitel/Exercise/01_LED.ipynb
