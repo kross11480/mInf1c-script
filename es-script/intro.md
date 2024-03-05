@@ -20,14 +20,24 @@ Chapter 2: Asynchronous event programming with state machines (start and stop ru
 * What is a state machine?
 * Coding a simple state machine in micropython
 
-Chapter 3: Timer 
+Chapter 3: Timer
 
-Chapter 4: On-board communication with SPI
+Chapter 4: On-board communication with SPI, I2C
 
 Chapter 5: Long distance, robust communication with CAN
 
 Chapter 6: Graphics
 
+Chapter 7: Bare-Metal in C
+* Memory Map
+* 
+
+Chapter 8: Assembler
+
+Chapter 9: Real-World Problems
+* Debouncing
+* Spaghetti Code
+* Race Conditions and Concurrency issues
 ```{tableofcontents}
 ```
 
