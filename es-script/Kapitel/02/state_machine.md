@@ -1,5 +1,10 @@
 # Events and State
+* Superloop is a infinite loop running forever, a fundamental in event-driven programming
 
+## Interrupts
+* define trigger (), and handler
+* handler, pin info is positional argument, set global variable for communication
+* 
 ## State Machine
 * What are Interrupts (trigger, events, polling)?
 * What is interrupt service routine (Callback, Handler)? 
@@ -19,4 +24,7 @@ State machine has
 * modeling the problem (Challenge: What are the states of the automat)
 * Easier writing, debugging, and testing code after modelling (if cur_state=on: if ev: nxt_state = ..)
 * State pattern in object oriented programming used in larger codebase
+
+#Common Pitfalls
+* event flag not unset after reaction
 
