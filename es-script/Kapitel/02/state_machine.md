@@ -1,7 +1,17 @@
 # Events and State
+
+The embedded systems once deployed are supposed to work forever. "Did you try turning it off and on?" is not an option. Therefore, all embedded system have some form of infinite loop that performs all the functions of the system. This entails checking for user or system inputs, doing some data processing, and finally producing some output. The simplest example would be to toggle an led based on a button press and s
+```python
+while True:
+    checkInput()
+    processData()
+    produceOutput()
+```
+S
 * Superloop is a infinite loop running forever, a fundamental in event-driven programming
 
 ## Interrupts
+Hardware interrupts eliminating unproductive waiting time in polling loops, waiting for external events.
 * define trigger (), and handler
 * handler, pin info is positional argument, set global variable for communication
 * 
