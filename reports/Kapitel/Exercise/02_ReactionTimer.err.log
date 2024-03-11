@@ -1,0 +1,93 @@
+Traceback (most recent call last):
+  File "/opt/homebrew/lib/python3.11/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
+    executenb(
+  File "/opt/homebrew/lib/python3.11/site-packages/nbclient/client.py", line 1314, in execute
+    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.11/site-packages/jupyter_core/utils/__init__.py", line 165, in wrapped
+    return loop.run_until_complete(inner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 653, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.11/site-packages/nbclient/client.py", line 709, in async_execute
+    await self.async_execute_cell(
+  File "/opt/homebrew/lib/python3.11/site-packages/nbclient/client.py", line 1062, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/opt/homebrew/lib/python3.11/site-packages/nbclient/client.py", line 918, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+import machine
+from random import random
+import time
+
+def set_reaction_time(pin):
+    global ev_btn
+    ev_btn = True
+
+def handler_timer(pin):
+    global ev_tim
+    ev_tim = True
+
+states = {'IDLE','READY','INVALID PRESS', 'PLAYER RESPONSE' 'VALID PRESS', 'LATE PRESS'}
+
+# Initialize Microcontroller
+green_led = machine.Pin('C6', machine.Pin.OUT)
+red_led = machine.Pin('C4', machine.Pin.OUT)
+s0_button = machine.Pin('B0', machine.Pin.IN, machine.Pin.PULL_UP)
+s0_button.irq(trigger = s0_button.IRQ_FALLING, handler = set_reaction_time)
+timer = machine.Timer()
+
+#Initialize State Machine
+state_ = 'IDLE'
+ev_btn = False #button event
+ev_tim = False #random timer expire (tr)
+t1 = 0
+while True:
+    if state_ == 'IDLE':
+        green_led.value(1)
+        red_led.value(1)        
+        if ev_btn:
+            #print ('pressed')
+            state_ = 'READY'
+            timer.init(period = int(random()*5000+1000), mode = machine.Timer.ONE_SHOT, callback= handler_timer)
+            ev_btn = False             
+    if state_ == 'READY':
+        green_led.value(0)
+        if ev_tim:
+            state_ = 'PLAYER RESPONSE'
+            red_led.value(0)
+            green_led.value(1)
+            t1 = time.ticks_ms()
+            ev_tim = False
+        if ev_btn:
+            state_ = 'INVALID PRESS'   
+    if state_ == 'PLAYER RESPONSE':
+        if ev_btn:
+            state_ = 'VALID PRESS'
+            ev_btn = False
+        if ev_tim:
+            state_ = 'LATE PRESS'         
+            ev_tim = False
+    if state_ == 'VALID PRESS':
+        print("Reaction Time:", time.ticks_ms()- t1)
+        state_ = 'IDLE'
+    if state_ == 'LATE PRESS':
+        print("Wake up")
+        state_ = 'IDLE'
+    if state_ == 'INVALID PRESS':
+        print("Trigger happy :-)")
+        state_ = 'IDLE'
+------------------
+
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mModuleNotFoundError[0m                       Traceback (most recent call last)
+Cell [0;32mIn[1], line 1[0m
+[0;32m----> 1[0m [38;5;28;01mimport[39;00m [38;5;21;01mmachine[39;00m
+[1;32m      2[0m [38;5;28;01mfrom[39;00m [38;5;21;01mrandom[39;00m [38;5;28;01mimport[39;00m random
+[1;32m      3[0m [38;5;28;01mimport[39;00m [38;5;21;01mtime[39;00m
+
+[0;31mModuleNotFoundError[0m: No module named 'machine'
+

@@ -1,4 +1,3 @@
-
 # What are Embedded Systems?
 
 ```{note}

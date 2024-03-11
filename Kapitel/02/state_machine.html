@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Kit &#8212; Embedded Systems</title>
+    <title>2. Events and State &#8212; Embedded Systems</title>
   
   
   
@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=384b581d" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
   
@@ -57,9 +57,11 @@
     <script async="async" src="../../_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'Kapitel/01/Kit';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'Kapitel/02/state_machine';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="3. Timer" href="../03/Timer.html" />
+    <link rel="prev" title="1.3. Getting Started" href="../../test_upython.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -121,8 +123,6 @@
       
       
       
-        
-      
       <div class="bd-sidebar-primary bd-sidebar">
         
 
@@ -176,14 +176,14 @@
                 </a>
             </li>
         </ul>
-        <ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="Tools.html">1. What are Embedded Systems?</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="WhyEmbedded.html">1.1. Why study Embedded Systems?</a></li>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../01/Tools.html">1. What are Embedded Systems?</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../01/WhyEmbedded.html">1.1. Why study Embedded Systems?</a></li>
 
 <li class="toctree-l2"><a class="reference internal" href="../../test_upython.html">1.3. Getting Started</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../02/state_machine.html">2. Events and State</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">2. Events and State</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../03/Timer.html">3. Timer</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../Exercise/Praktika.html">4. Praktika</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../Exercise/01_LED.html">4.1. Exercise 1: LED Chaser</a></li>
@@ -260,7 +260,7 @@
       
       
       
-      <li><a href="https://github.com/executablebooks/jupyter-book/issues/new?title=Issue%20on%20page%20%2FKapitel/01/Kit.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/executablebooks/jupyter-book/issues/new?title=Issue%20on%20page%20%2FKapitel/02/state_machine.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -290,7 +290,7 @@
       
       
       
-      <li><a href="../../_sources/Kapitel/01/Kit.md" target="_blank"
+      <li><a href="../../_sources/Kapitel/02/state_machine.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -374,7 +374,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Kit</h1>
+    <h1>Events and State</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -384,12 +384,11 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Kit</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#hardware">Hardware</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#software">Software</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#optional">Optional</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#interrupts">2.1. Interrupts</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#state-machine">2.2. State Machine</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-a-state-and-a-state-machine">2.3. What is a state and a state machine?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-do-i-need-a-state-machine">2.4. Why do i need a state machine</a></li>
 </ul>
-
             </nav>
         </div>
     </div>
@@ -400,26 +399,57 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="kit">
-<h1>Kit<a class="headerlink" href="#kit" title="Link to this heading">#</a></h1>
-<p>This course logistics include the following hardware available in the embedded systems lab.</p>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="hardware">
-<h1>Hardware<a class="headerlink" href="#hardware" title="Link to this heading">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="events-and-state">
+<h1><span class="section-number">2. </span>Events and State<a class="headerlink" href="#events-and-state" title="Link to this heading">#</a></h1>
+<p>The embedded systems once deployed are supposed to work forever. “Did you try turning it off and on?” is not an option. Therefore, all embedded system have some form of infinite loop that performs all the functions of the system.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    
+</pre></div>
+</div>
 <ul class="simple">
-<li><p>STM32 Board</p></li>
-<li><p>STefi Shield</p></li>
-<li><p>USB Cable, a computer</p></li>
+<li></li>
+<li><p>Superloop is a infinite loop running forever, a fundamental in event-driven programming</p></li>
+</ul>
+<section id="interrupts">
+<h2><span class="section-number">2.1. </span>Interrupts<a class="headerlink" href="#interrupts" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>define trigger (), and handler</p></li>
+<li><p>handler, pin info is positional argument, set global variable for communication</p></li>
+<li></li>
 </ul>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="software">
-<h1>Software<a class="headerlink" href="#software" title="Link to this heading">#</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="optional">
-<h1>Optional<a class="headerlink" href="#optional" title="Link to this heading">#</a></h1>
+<section id="state-machine">
+<h2><span class="section-number">2.2. </span>State Machine<a class="headerlink" href="#state-machine" title="Link to this heading">#</a></h2>
 <ul class="simple">
-<li><p>Github account</p></li>
+<li><p>What are Interrupts (trigger, events, polling)?</p></li>
+<li><p>What is interrupt service routine (Callback, Handler)?</p></li>
+<li><p>What is a state and a state machine?</p></li>
+<li><p>Why do i need a state machine?</p></li>
+<li></li>
 </ul>
+</section>
+<section id="what-is-a-state-and-a-state-machine">
+<h2><span class="section-number">2.3. </span>What is a state and a state machine?<a class="headerlink" href="#what-is-a-state-and-a-state-machine" title="Link to this heading">#</a></h2>
+<p>State machine has</p>
+<ul class="simple">
+<li><p>finite number of states (e.g. led chaser is “on”, “off”)</p></li>
+<li><p>can only be in one state at a time (deterministic)</p></li>
+<li><p>events are inputs to the state machine (e.g. button press)</p></li>
+</ul>
+</section>
+<section id="why-do-i-need-a-state-machine">
+<h2><span class="section-number">2.4. </span>Why do i need a state machine<a class="headerlink" href="#why-do-i-need-a-state-machine" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Spaghetti Code (Problem: think in terms of event instead of state)</p></li>
+<li><p>modeling the problem (Challenge: What are the states of the automat)</p></li>
+<li><p>Easier writing, debugging, and testing code after modelling (if cur_state=on: if ev: nxt_state = ..)</p></li>
+<li><p>State pattern in object oriented programming used in larger codebase</p></li>
+</ul>
+<p>#Common Pitfalls</p>
+<ul class="simple">
+<li><p>event flag not unset after reaction</p></li>
+</ul>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -435,7 +465,7 @@ document.write(`
         },
         kernelOptions: {
             name: "python3",
-            path: "./Kapitel/01"
+            path: "./Kapitel/02"
         },
         predefinedOutput: true
     }
@@ -452,6 +482,24 @@ document.write(`
                 <footer class="prev-next-footer">
                   
 <div class="prev-next-area">
+    <a class="left-prev"
+       href="../../test_upython.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><span class="section-number">1.3. </span>Getting Started</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../03/Timer.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><span class="section-number">3. </span>Timer</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
                 </footer>
               
@@ -468,12 +516,11 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Kit</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#hardware">Hardware</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#software">Software</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#optional">Optional</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#interrupts">2.1. Interrupts</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#state-machine">2.2. State Machine</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-a-state-and-a-state-machine">2.3. What is a state and a state machine?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-do-i-need-a-state-machine">2.4. Why do i need a state machine</a></li>
 </ul>
-
   </nav></div>
 
 </div></div>

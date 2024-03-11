@@ -60,7 +60,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'intro';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="What are Embedded Systems?" href="Kapitel/01/Tools.html" />
+    <link rel="next" title="1. What are Embedded Systems?" href="Kapitel/01/Tools.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -177,12 +177,17 @@
                 </a>
             </li>
         </ul>
-        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="Kapitel/01/Tools.html">What are Embedded Systems?</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="Kapitel/01/WhyEmbedded.html">Why study Embedded Systems?</a></li>
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="Kapitel/01/Tools.html">1. What are Embedded Systems?</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="Kapitel/01/WhyEmbedded.html">1.1. Why study Embedded Systems?</a></li>
 
-<li class="toctree-l2"><a class="reference internal" href="test_upython.html">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test_upython.html">1.3. Getting Started</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Kapitel/02/state_machine.html">2. Events and State</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Kapitel/03/Timer.html">3. Timer</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="Kapitel/Exercise/Praktika.html">4. Praktika</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="Kapitel/Exercise/01_LED.html">4.1. Exercise 1: LED Chaser</a></li>
 </ul>
 </li>
 </ul>
@@ -389,10 +394,45 @@ document.write(`
 <ul class="simple">
 <li><p>What is a microcontroller? A package containing processor, flash, ram, and peripherals (from simple )</p></li>
 </ul>
+<p>Summary
+Chapter 1: Basics (running light)</p>
+<ul class="simple">
+<li><p>reading schematics: Pin, Pullup, low active</p></li>
+<li><p>What is a microcontroller</p></li>
+<li><p>Mighty GPIO</p></li>
+<li><p>Programming in Micropython</p></li>
+<li><p>What else can i do with GPIO? Sensors, Actuators</p></li>
+</ul>
+<p>Chapter 2: Asynchronous event programming with state machines (start and stop running light)</p>
+<ul class="simple">
+<li><p>Polling</p></li>
+<li><p>Interrupts</p></li>
+<li><p>Callback</p></li>
+<li><p>What is a state machine?</p></li>
+<li><p>Coding a simple state machine in micropython</p></li>
+</ul>
+<p>Chapter 3: Timer</p>
+<p>Chapter 4: On-board communication with SPI, I2C</p>
+<p>Chapter 5: Long distance, robust communication with CAN</p>
+<p>Chapter 6: Graphics</p>
+<p>Chapter 7: Bare-Metal in C</p>
+<ul class="simple">
+<li><p>Memory Map</p></li>
+<li></li>
+</ul>
+<p>Chapter 8: Assembler</p>
+<p>Chapter 9: Real-World Problems</p>
+<ul class="simple">
+<li><p>Debouncing</p></li>
+<li><p>Spaghetti Code</p></li>
+<li><p>Race Conditions and Concurrency issues</p></li>
+</ul>
 <div class="toctree-wrapper compound">
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="Kapitel/01/Tools.html">What are Embedded Systems?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Kapitel/01/Tools.html">1. What are Embedded Systems?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Kapitel/02/state_machine.html">2. Events and State</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Kapitel/03/Timer.html">3. Timer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Kapitel/Exercise/Praktika.html">4. Praktika</a></li>
 </ul>
 </div>
 </section>
@@ -432,7 +472,7 @@ document.write(`
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">What are Embedded Systems?</p>
+        <p class="prev-next-title"><span class="section-number">1. </span>What are Embedded Systems?</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
