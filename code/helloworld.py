@@ -4,10 +4,17 @@ import time
 
 button = machine.Pin('B0', machine.Pin.IN, machine.Pin.PULL_UP)
 led = machine.Pin('C7' ,machine.Pin.OUT)
-state = 1
-while True:
-    if button.value() == 0:
-        led.value(1) #switch off led
-    else:
-        led.value(not led.value())
-        time.sleep(0.5)
+FREQ = 1
+DELAY = 1/(2* FREQ)
+#toggle led when the button is pressed
+def version1():
+    while True:
+        if button.value() == 0: #toggle led
+             led.value(not led.value())
+             time.sleep(DELAY))
+        else:
+             led.value(1) #switch off led
+
+#toggle led when the button is pushed once and switch off if pressed again.
+def version2():
+     pass
