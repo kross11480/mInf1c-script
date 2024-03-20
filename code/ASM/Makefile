@@ -2,7 +2,7 @@ ARMGNU ?= arm-none-eabi
 
 AOPS = -g
 
-program = toggle_led_bug
+program = toggle_led_button_polling
 srcs := $(wildcard *.s)
 objects := $(srcs:.s=.o)
 
