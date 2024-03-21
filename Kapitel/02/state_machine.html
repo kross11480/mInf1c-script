@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=384b581d" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
   
@@ -60,7 +60,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'Kapitel/02/state_machine';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="3. Timer" href="../03/Timer.html" />
+    <link rel="next" title="3. General Purpose Input and Output" href="../03/gpio.html" />
     <link rel="prev" title="1.3. Getting Started" href="../../test_upython.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -184,9 +184,10 @@
 </ul>
 </li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">2. Events and State</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../03/Timer.html">3. Timer</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../Exercise/Praktika.html">4. Praktika</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../Exercise/01_LED.html">4.1. Exercise 1: LED Chaser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../03/gpio.html">3. General Purpose Input and Output</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../03/Timer.html">4. Timer</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../Exercise/Praktika.html">5. Praktika</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../Exercise/01_LED.html">5.1. Exercise 1: LED Chaser</a></li>
 </ul>
 </li>
 </ul>
@@ -401,17 +402,20 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="events-and-state">
 <h1><span class="section-number">2. </span>Events and State<a class="headerlink" href="#events-and-state" title="Link to this heading">#</a></h1>
-<p>The embedded systems once deployed are supposed to work forever. “Did you try turning it off and on?” is not an option. Therefore, all embedded system have some form of infinite loop that performs all the functions of the system.</p>
+<p>The embedded systems once deployed are supposed to work forever. “Did you try turning it off and on?” is not an option. Therefore, all embedded system have some form of infinite loop that performs all the functions of the system. This entails checking for user or system inputs, doing some data processing, and finally producing some output. The simplest example would be to toggle an led based on a button press and s</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-    
+    <span class="n">checkInput</span><span class="p">()</span>
+    <span class="n">processData</span><span class="p">()</span>
+    <span class="n">produceOutput</span><span class="p">()</span>
 </pre></div>
 </div>
+<p>S</p>
 <ul class="simple">
-<li></li>
 <li><p>Superloop is a infinite loop running forever, a fundamental in event-driven programming</p></li>
 </ul>
 <section id="interrupts">
 <h2><span class="section-number">2.1. </span>Interrupts<a class="headerlink" href="#interrupts" title="Link to this heading">#</a></h2>
+<p>Hardware interrupts eliminating unproductive waiting time in polling loops, waiting for external events.</p>
 <ul class="simple">
 <li><p>define trigger (), and handler</p></li>
 <li><p>handler, pin info is positional argument, set global variable for communication</p></li>
@@ -492,11 +496,11 @@ document.write(`
       </div>
     </a>
     <a class="right-next"
-       href="../03/Timer.html"
+       href="../03/gpio.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title"><span class="section-number">3. </span>Timer</p>
+        <p class="prev-next-title"><span class="section-number">3. </span>General Purpose Input and Output</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
