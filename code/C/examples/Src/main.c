@@ -50,22 +50,27 @@ void sleep(uint32_t ms){
 }
 
 void toggle_led(uint32_t pos){
-    set_bit(gpioc_out, pos);
-    sleep(DELAY);
-    clear_bit(gpioc_out, pos);
+    toggle_bit(gpioc_out, pos);
     sleep(DELAY);
 }
 
 void led_off(uint32_t pos){
     set_bit(gpioc_out, pos);
-    sleep(500);
+    sleep(100);
 }
 
 bool button_pressed(uint32_t pos){
     uint32_t btn_value = *gpiob_in & (1U << pos);
     if(button_state & btn_value == 0){
-        button_state = btn_value;
-        return 1;
+        sleep(10); // Debounce time
+        btn_value = *gpiob_in & (1U << pos);
+        if(btn_value == 0){
+            button_state = btn_value;
+            return 1;
+        } else {
+            button_state = btn_value;
+            return 0;
+        }
     } else {
         button_state = btn_value;
         return 0;
@@ -75,7 +80,6 @@ bool button_pressed(uint32_t pos){
 int main(void){
     bool state = false;
     initialize();
-
     while(1){
         if(button_pressed(BTN) == 1){
             state = !state;

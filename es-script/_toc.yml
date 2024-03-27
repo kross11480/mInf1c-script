@@ -15,6 +15,9 @@ chapters:
   - file: Kapitel/02/state_machine.md
   # chapter 3:
   - file: Kapitel/03/gpio.md
+    sections:
+    - file: Kapitel/03/baremetal.md
+
   - file: Kapitel/03/Timer.md
   - file: Kapitel/Exercise/Praktika.md
     sections:
