@@ -1,5 +1,6 @@
 # General Purpose Input and Output
-
+```{warning} You should have no fear in reading schematics and finding relevant needle information in datasheet stack. 
+```
 Digital Input and Outputs are found in all embedded systems. In physical world, it is not only need for interaction with users but also machines. They are used for interfacing with pushbuttons, LEDs in coffee machines to pressure switch, motors in a sliding door. The word digital suggests that the value of input or output can only be 1 or 0. The value signifies the state of the input/output as on/off, true/false, …. which are obtained by applying high/low voltages to the microcontroller pin. Your firmware code can read or set the voltages of microcontroller pin by reading or writing the values from I/O registers. 
 
 ![Untitled](Figures/io.png)
@@ -60,4 +61,3 @@ After correct initialisation, an incorrect application logic or partly working a
 - Polling and Problems
 - Bouncing and Debouncing
 
-##

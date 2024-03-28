@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>3. General Purpose Input and Output &#8212; Embedded Systems</title>
+    <title>3.3. BareMetal I/O &#8212; Embedded Systems</title>
   
   
   
@@ -57,11 +57,11 @@
     <script async="async" src="../../_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'Kapitel/03/gpio';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'Kapitel/03/baremetal';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="3.3. BareMetal I/O" href="baremetal.html" />
-    <link rel="prev" title="2. Events and State" href="../02/state_machine.html" />
+    <link rel="next" title="4. Timer" href="Timer.html" />
+    <link rel="prev" title="3. General Purpose Input and Output" href="gpio.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -184,8 +184,8 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../02/state_machine.html">2. Events and State</a></li>
-<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">3. General Purpose Input and Output</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="baremetal.html">3.3. BareMetal I/O</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="gpio.html">3. General Purpose Input and Output</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">3.3. BareMetal I/O</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="Timer.html">4. Timer</a></li>
@@ -264,7 +264,7 @@
       
       
       
-      <li><a href="https://github.com/executablebooks/jupyter-book/issues/new?title=Issue%20on%20page%20%2FKapitel/03/gpio.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/executablebooks/jupyter-book/issues/new?title=Issue%20on%20page%20%2FKapitel/03/baremetal.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -294,7 +294,7 @@
       
       
       
-      <li><a href="../../_sources/Kapitel/03/gpio.md" target="_blank"
+      <li><a href="../../_sources/Kapitel/03/baremetal.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -378,7 +378,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>General Purpose Input and Output</h1>
+    <h1>BareMetal I/O</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -388,16 +388,10 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#initialisation">3.1. Initialisation</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pins-and-their-configuration">3.1.1. Pins and their Configuration</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pull-ups-and-pull-downs">3.1.2. Pull-ups and Pull-downs</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#forever-loop-for-application">3.2. Forever Loop for Application</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-can-i-blink-my-led">3.2.1. How can i blink my LED?</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#my-application-meets-real-world">3.2.2. My application meets Real World</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#let-us-go-bare-metal">3.3.1. Let us go bare-metal!</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#registers">3.3.2. Registers</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#memory-map">3.3.3. Memory Map</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c">3.3.4. C</a></li>
 </ul>
             </nav>
         </div>
@@ -409,74 +403,98 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="general-purpose-input-and-output">
-<h1><span class="section-number">3. </span>General Purpose Input and Output<a class="headerlink" href="#general-purpose-input-and-output" title="Link to this heading">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="baremetal-i-o">
+<h1><span class="section-number">3.3. </span>BareMetal I/O<a class="headerlink" href="#baremetal-i-o" title="Link to this heading">#</a></h1>
+<section id="let-us-go-bare-metal">
+<h2><span class="section-number">3.3.1. </span>Let us go bare-metal!<a class="headerlink" href="#let-us-go-bare-metal" title="Link to this heading">#</a></h2>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>You should have no fear in reading schematics and finding relevant needle information in datasheet stack.</p>
 </div>
-<p>Digital Input and Outputs are found in all embedded systems. In physical world, it is not only need for interaction with users but also machines. They are used for interfacing with pushbuttons, LEDs in coffee machines to pressure switch, motors in a sliding door. The word digital suggests that the value of input or output can only be 1 or 0. The value signifies the state of the input/output as on/off, true/false, …. which are obtained by applying high/low voltages to the microcontroller pin. Your firmware code can read or set the voltages of microcontroller pin by reading or writing the values from I/O registers.</p>
-<p><img alt="Untitled" src="../../_images/io.png" /></p>
-<p>For a light-emitting diode (LED 1) to glow, a certain amount of current should flow through it. If one LED pin is connected to the Voltage (V_CC) and other pin to microcontroller pin over a current-limiting resistor. On applying low voltage to microcontroller pin, one can light up an LED and on applying high voltage to the microcontroller pin the LED will switch off. Here, the software sets the relevant bit in a register to 0, so that low voltage is set on corresponding microcontroller pin for the LED to glow. If the relevant bit is set to 1, then high voltage on microcontroller pin means that LED does not glow. Alternating values of 0 and 1 leads to blinking of LED which lightens up the festive season.</p>
-<p>A push-button (PB1) pin is connected to ground and other to microcontroller input pin. When button is pressed, one can read the state of the microcontroller pin as 0. However, if the button is released, the pin value will float between 0 and 1. External noise (e.g. from piezo electric lighter) can cause inadvertent change in state of the pin. Therefore, pull-up or pull-down resistors are used to address this issue.</p>
-<p>Firmware code consists of a initialisation part and a forever loop part which implements the application logic. For a simple application, where a status LED goes on whenever a system goes live, one has implement</p>
+<p>Unlike in high-level languages like micropython, where lot of system level functionality is already provided. In a low-level language like C, one has better performance through direct access to hardware. This makes C, the preferred language for programming in embedded systems. It not only provides high-level abstractions and portability, but is also closer to machine. In this chapter, we will learn the following concepts:</p>
 <ul class="simple">
-<li><p>initialisation: determine the microcontroller pin connected to led and set microcontroller pin to output.</p></li>
-<li><p>application: set pin value to ‘on’</p></li>
-</ul>
-<p>Therefore, when developing a system it important to determine the following for correct initialisation.</p>
-<ul class="simple">
-<li><p>Which port pins are the digital signals connected?</p></li>
-<li><p>Are the digital signal for input or output components?</p></li>
-<li><p>whether, the output signal value 1 or 0 determines the off state of the LED.</p></li>
-<li><p>whether, the input signal value 1 or 0 determines the pressed state of the button.</p></li>
-<li><p>falling or rising flank for digital inputs (i.e. transition from 1 to 0 or 0 to 1, respectively) should trigger a change in application state.</p></li>
-</ul>
-<p>For writing the application logic, it is important to think about the application requirements and model a possible solution architecture. This aids one in programming and debugging. Therefore, one has to</p>
-<ul class="simple">
-<li><p>model a solution using flowcharts, event diagrams, state machines, ….</p></li>
-<li><p>think about how to test your applications, particularly the real world corner cases.</p></li>
-</ul>
-<section id="initialisation">
-<h2><span class="section-number">3.1. </span>Initialisation<a class="headerlink" href="#initialisation" title="Link to this heading">#</a></h2>
-<p>This part of the program code is executed once in the beginning to initialise the system. After initialisation, the application logic is implemented forever in a loop as long as the system is powered. Very often incorrect initialisation is the reason for the application not working.</p>
-<section id="pins-and-their-configuration">
-<h3><span class="section-number">3.1.1. </span>Pins and their Configuration<a class="headerlink" href="#pins-and-their-configuration" title="Link to this heading">#</a></h3>
-<p>Microcontroller pins are a rare commodity. Therefore, pins can have different modes</p>
-<ul class="simple">
-<li><p>analog:</p></li>
-<li><p>input:</p></li>
-<li><p>output:</p></li>
-<li><p>alternate function:</p></li>
-</ul>
-<p>In case of digital input or output, o</p>
-</section>
-<section id="pull-ups-and-pull-downs">
-<h3><span class="section-number">3.1.2. </span>Pull-ups and Pull-downs<a class="headerlink" href="#pull-ups-and-pull-downs" title="Link to this heading">#</a></h3>
-<p><img alt="Untitled" src="../../_images/pushbtn.png" /></p>
-</section>
-</section>
-<section id="forever-loop-for-application">
-<h2><span class="section-number">3.2. </span>Forever Loop for Application<a class="headerlink" href="#forever-loop-for-application" title="Link to this heading">#</a></h2>
-<p>After correct initialisation, an incorrect application logic or partly working application logic can lead to lots of frustration. Therefore, it is of utmost importance to model the application and think of some tests to validate the application logic.</p>
-<section id="how-can-i-blink-my-led">
-<h3><span class="section-number">3.2.1. </span>How can i blink my LED?<a class="headerlink" href="#how-can-i-blink-my-led" title="Link to this heading">#</a></h3>
-<ul class="simple">
-<li><p>set pin value to 0 or 1 depending in low active</p></li>
-<li><p>waveform, delay, and sleep</p></li>
-<li></li>
+<li><p>Memory map</p></li>
+<li><p>Registers</p></li>
+<li><p>Pointers in C</p></li>
+<li><p>Bit Masking</p></li>
+<li><p>Standard library</p></li>
 </ul>
 </section>
-<section id="my-application-meets-real-world">
-<h3><span class="section-number">3.2.2. </span>My application meets Real World<a class="headerlink" href="#my-application-meets-real-world" title="Link to this heading">#</a></h3>
+<section id="registers">
+<h2><span class="section-number">3.3.2. </span>Registers<a class="headerlink" href="#registers" title="Link to this heading">#</a></h2>
+<p>Apart from hardware registers in the CPU, the microcontroller has lots of registers in peripherals like GPIO, Timers, … available to programmer for configuring and controlling certain function in them. This enables interaction with external devices from LEDs to Camera sensors. For, the exercise of writing a program to starting the led chaser application on button press event and switching off led chaser on second button press. The following peripherals and some of their registers would need to be programmed in an STM32 microcontroller.</p>
 <ul class="simple">
-<li><p>Polling and Problems</p></li>
-<li><p>Bouncing and Debouncing</p></li>
+<li><p>RCC: Reset and Clock Controller</p>
+<ul>
+<li><p>AHB2ENR: turn on the clock for the needed peripherals in application.</p></li>
 </ul>
+</li>
+<li><p>GPIO: General Purpose Input and Output</p>
+<ul>
+<li><p>MODER: set the direction of microcontroller pins (e.g. input mode for push-buttons, output mode for LEDs)</p></li>
+<li><p>IDR: For reading the peripheral data (e.g. push-button status)</p></li>
+<li><p>ODR: For writing the peripheral data (e.g. switch the LEDs on or off)</p></li>
+<li><p>PUPDR: In case there are no external pull-up or pull-down registers for the input pins. One can enable or disable, the internal pull-up and pull-down resistors in GPIO Peripherals.</p></li>
+</ul>
+</li>
+</ul>
+<p>In order to program the registers correctly, one needs to look into datasheet of the microcontroller. For lighting up an LED, the microcontroller pin must be set to low voltage. This is done by using a GPIO peripheral. The reference manual of the microcontroller contains a chapter on GPIO describing its main features, functionality, and registers. GPIO peripheral has multiple instances (Port A to G) and each port has 16 pins. The GPIO output data register (ODR) controls the voltage level of the microcontroller pins. The bit 0 and bit 3 in ODR register sets the voltage level of pin 0 and pin 3 respectively. Therefore, to light up an LED connected to port C and pin 3, the bit 3 must be set to 0. The reset value is the initial value of the register when the system is powered up. What does this mean for our system? One can write and read the values in this register.
+<img alt="Untitled" src="../../_images/odr.png" /></p>
 </section>
-</section>
-<div class="toctree-wrapper compound">
+<section id="memory-map">
+<h2><span class="section-number">3.3.3. </span>Memory Map<a class="headerlink" href="#memory-map" title="Link to this heading">#</a></h2>
+<p>Unlike hardware registers in CPU, the peripheral registers have a address which allows the software to control peripheral by reading or writing from specific memory locations. This concept of memory-mapped I/O is used in all modern microcontrollers. An address is a memory location. In our microcontroller, the address is 32-bit and is represented as unsigned integer (uint32_t in C). Here, the 4GB address space is divided into regions: program memory (internal flash), internal RAM, peripherals, external RAM, external peripherals, and system region.
+<img alt="Untitled" src="../../_images/memmap.png" /></p>
+<p>From the STM32 reference manual, we see that the peripheral region starts at 0x40000000. The Reset and Clock Control (RCC) peripheral is connected to the AHB1 Bus and starts at the Address 0x40021000.Similarly, the GPIOC peripheral starts at the address 0x48000800. The address offset of the GPIOC output data register is 0x14, Therefore one can calculate the address of the register as 0x48000800 + 0x14 = 0x48000814. Using C, one can load of store values (4 bytes) into this register by using the address. C pointers is a great technique for accessing the memory address.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">volatile</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="k">const</span><span class="w"> </span><span class="n">gpioc_out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="mh">0x48000814</span><span class="p">;</span>
+<span class="o">*</span><span class="n">gpio_cout</span><span class="w"> </span><span class="o">=</span><span class="mh">0x4</span><span class="p">;</span><span class="w"> </span><span class="c1">//set pin C2 to 1</span>
+</pre></div>
 </div>
+<p>The above line of code will set the microcontroller pin ‘C2’ to 1. Thus, turning off the LED.</p>
+</section>
+<section id="c">
+<h2><span class="section-number">3.3.4. </span>C<a class="headerlink" href="#c" title="Link to this heading">#</a></h2>
+<p>When do we use the volatile keyword in C? This is a standard question in embedded systems programming interview. This section will give a quick recap of the C concepts needed for microcontroller programming. The variables in C are named storage locations in memory declared with a specific data type (e.g. uint32_t). For a beginner, the following code looks cryptic with arrows and tildes.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">GPIOC</span><span class="o">-&gt;</span><span class="n">MODER</span><span class="w"> </span><span class="o">&amp;=</span><span class="w"> </span><span class="o">~</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>C pointers and Bit masking are the most concept for embedded systems programming. A pointer is a variable that holds a memory address as their values. They are declared using the ‘*’ operator and datatype of the values they hold. As the memory address in cortex microcontroller system is 32-bit, therefore the datatype is uint32_t. The variable gpioc_out is initialized to point to memory address of the output data register for GPIOC (i.e. 0x48000814) . This pointer can be used to read or write data to the register.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="n">gpioc_out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="mh">0x48000814</span><span class="p">;</span>
+<span class="o">*</span><span class="n">gpio_cout</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The pointers are often used to access data by offset in arrays or related data grouped together in struct field. Although, we need only 3 of the GPIO registers. The task of looking up the offsets and calculating the address is repetitive and error-prone. Therefore, a ‘struct gpio’ declaration defines a structure that contains all registers associated with GPIO Peripheral in the same order as in datasheet for the correct offsets.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">gpio</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">volatile</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">MODER</span><span class="p">;</span><span class="w">    </span><span class="c1">// GPIO port mode register</span>
+<span class="w">    </span><span class="k">volatile</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">OTYPER</span><span class="p">;</span><span class="w">   </span><span class="c1">// GPIO port output type register</span>
+<span class="w">    </span><span class="k">volatile</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">OSPEEDR</span><span class="p">;</span><span class="w">  </span><span class="c1">// GPIO port output speed register</span>
+<span class="w">    </span><span class="k">volatile</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">PUPDR</span><span class="p">;</span><span class="w">    </span><span class="c1">// GPIO port pull-up/pull-down register</span>
+<span class="w">    </span><span class="k">volatile</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">IDR</span><span class="p">;</span><span class="w">      </span><span class="c1">// GPIO port input data register</span>
+<span class="w">    </span><span class="k">volatile</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">ODR</span><span class="p">;</span><span class="w">      </span><span class="c1">// GPIO port output data register</span>
+<span class="w">    </span><span class="k">volatile</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">BSRR</span><span class="p">;</span><span class="w">     </span><span class="c1">// GPIO port bit set/reset register</span>
+<span class="w">    </span><span class="k">volatile</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">LCKR</span><span class="p">;</span><span class="w">     </span><span class="c1">// GPIO port configuration lock register</span>
+<span class="w">    </span><span class="k">volatile</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">AFR</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span><span class="w">   </span><span class="c1">// GPIO alternate function low and high register</span>
+<span class="p">};</span>
+
+<span class="cp">#define gpioC ((struct gpio *)0x48000800)</span>
+</pre></div>
+</div>
+<p>The macro defines the pointer gpioC to base address of the GPIOC Peripheral. This allows easy access to the registers.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">toggle_led</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">pos</span><span class="p">){</span>
+<span class="w">    </span><span class="n">gpioC</span><span class="o">-&gt;</span><span class="n">ODR</span><span class="w"> </span><span class="o">^=</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">LED_POS</span><span class="p">);</span>
+<span class="w">    </span><span class="n">sleep</span><span class="p">(</span><span class="n">DELAY</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The -&gt; operator is used to access the members of a struct through a pointer to that struct.</p>
+<ul class="simple">
+<li><p>bit masking</p></li>
+<li><p>arrays</p></li>
+<li><p>structs</p></li>
+<li><p>volatile</p></li>
+</ul>
+<p>These variables are accessed with load and store assembler instructions. The logical and arithmetic expressions are implemented using ALU instructions. The control flow using while and for loops are implemented using branch instructions.</p>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -510,20 +528,20 @@ document.write(`
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../02/state_machine.html"
+       href="gpio.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title"><span class="section-number">2. </span>Events and State</p>
+        <p class="prev-next-title"><span class="section-number">3. </span>General Purpose Input and Output</p>
       </div>
     </a>
     <a class="right-next"
-       href="baremetal.html"
+       href="Timer.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title"><span class="section-number">3.3. </span>BareMetal I/O</p>
+        <p class="prev-next-title"><span class="section-number">4. </span>Timer</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -543,16 +561,10 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#initialisation">3.1. Initialisation</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pins-and-their-configuration">3.1.1. Pins and their Configuration</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pull-ups-and-pull-downs">3.1.2. Pull-ups and Pull-downs</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#forever-loop-for-application">3.2. Forever Loop for Application</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-can-i-blink-my-led">3.2.1. How can i blink my LED?</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#my-application-meets-real-world">3.2.2. My application meets Real World</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#let-us-go-bare-metal">3.3.1. Let us go bare-metal!</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#registers">3.3.2. Registers</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#memory-map">3.3.3. Memory Map</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c">3.3.4. C</a></li>
 </ul>
   </nav></div>
 
