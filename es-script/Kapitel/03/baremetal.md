@@ -36,11 +36,53 @@ From the STM32 reference manual, we see that the peripheral region starts at 0x4
 
 ```c
 volatile uint32_t *const gpioc_out = (uint32_t *) 0x48000814;
-*gpio_cout =0x4;
+*gpio_cout =0x4; //set pin C2 to 1
 ```
 
 The above line of code will set the microcontroller pin ‘C2’ to 1. Thus, turning off the LED.
 
 ## C
 
-When do we use the volatile keyword in C? This is a standard question in embedded systems programming interview. This section will give a quick recap of the C concepts needed for microcontroller programming.
+When do we use the volatile keyword in C? This is a standard question in embedded systems programming interview. This section will give a quick recap of the C concepts needed for microcontroller programming. The variables in C are named storage locations in memory declared with a specific data type (e.g. uint32_t). For a beginner, the following code looks cryptic with arrows and tildes.
+```c
+GPIOC->MODER &= ~(1 << 2);
+```
+C pointers and Bit masking are the most concept for embedded systems programming. A pointer is a variable that holds a memory address as their values. They are declared using the '*' operator and datatype of the values they hold. As the memory address in cortex microcontroller system is 32-bit, therefore the datatype is uint32_t. The variable gpioc_out is initialized to point to memory address of the output data register for GPIOC (i.e. 0x48000814) . This pointer can be used to read or write data to the register.
+```c
+uint32_t *gpioc_out = (uint32_t *) 0x48000814;
+*gpio_cout |= (1 << 2);
+```
+The pointers are often used to access data by offset in arrays or related data grouped together in struct field. Although, we need only 3 of the GPIO registers. The task of looking up the offsets and calculating the address is repetitive and error-prone. Therefore, a 'struct gpio' declaration defines a structure that contains all registers associated with GPIO Peripheral in the same order as in datasheet for the correct offsets.
+```c
+struct gpio {
+    volatile uint32_t MODER;    // GPIO port mode register
+    volatile uint32_t OTYPER;   // GPIO port output type register
+    volatile uint32_t OSPEEDR;  // GPIO port output speed register
+    volatile uint32_t PUPDR;    // GPIO port pull-up/pull-down register
+    volatile uint32_t IDR;      // GPIO port input data register
+    volatile uint32_t ODR;      // GPIO port output data register
+    volatile uint32_t BSRR;     // GPIO port bit set/reset register
+    volatile uint32_t LCKR;     // GPIO port configuration lock register
+    volatile uint32_t AFR[2];   // GPIO alternate function low and high register
+};
+
+#define gpioC ((struct gpio *)0x48000800)
+```
+The macro defines the pointer gpioC to base address of the GPIOC Peripheral. This allows easy access to the registers. The -> operator is used to access the members of a struct through a pointer to that struct.
+```c
+void toggle_led(uint32_t pos){
+    gpioC->ODR ^= (1 << LED_POS);
+    sleep(DELAY);
+}
+```
+In this example the bit in ODR corresponding to the LED is inverted. This would change the state of LED. The bitwise operations are used for bit masking. 
+## Bit Masking
+The main reason behind bit masking operations is to change only the target bit and not all the 32 bits in the register. For example in '*gpio_cout =0x4;', we write 1 to bit 2 and all other bits to 0. This means we not only switch off the led on pin C2, but also inadvertently switch on other LEDs if there is one from C0,C1, C3, .... There
+
+* bit masking
+* arrays
+* structs
+* volatile
+
+
+These variables are accessed with load and store assembler instructions. The logical and arithmetic expressions are implemented using ALU instructions. The control flow using while and for loops are implemented using branch instructions. 

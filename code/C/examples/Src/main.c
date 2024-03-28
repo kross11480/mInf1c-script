@@ -1,18 +1,24 @@
 #include "stdbool.h"
 #include "inttypes.h"
 
-#define LED_POS 7
-#define BTN 0
+#define LED_POS 5
 #define DELAY 500
 
 volatile uint32_t *const rcc_clock_enable = (uint32_t *) 0x4002104C;
-volatile uint32_t *const gpioc_out = (uint32_t *) 0x48000814;
-volatile uint32_t *const gpioc_mode = (uint32_t *) 0x48000800;
-volatile uint32_t *const gpiob_in = (uint32_t *) 0x48000410;
-volatile uint32_t *const gpiob_mode = (uint32_t *) 0x48000400;
-volatile uint32_t *const gpiob_pullup = (uint32_t *) 0x4800040C;
 
-bool button_state = 1;
+struct gpio {
+    volatile uint32_t MODER;    // GPIO port mode register
+    volatile uint32_t OTYPER;   // GPIO port output type register
+    volatile uint32_t OSPEEDR;  // GPIO port output speed register
+    volatile uint32_t PUPDR;    // GPIO port pull-up/pull-down register
+    volatile uint32_t IDR;      // GPIO port input data register
+    volatile uint32_t ODR;      // GPIO port output data register
+    volatile uint32_t BSRR;     // GPIO port bit set/reset register
+    volatile uint32_t LCKR;     // GPIO port configuration lock register
+    volatile uint32_t AFR[2];   // GPIO alternate function low and high register
+};
+
+#define gpioC ((struct gpio *)0x48000800)
 
 void set_bit(volatile uint32_t *const reg, int pos){
     *reg |= (1U << pos);
@@ -31,15 +37,8 @@ void initialize(){
     set_bit(rcc_clock_enable, 2);
     set_bit(rcc_clock_enable, 1);
     /* initialize blue led on port C7*/
-    clear_bit(gpioc_mode, 2*LED_POS+1);
-    set_bit(gpioc_out, LED_POS);
-
-    /* initialize button S0 on Port B0, mode 00(input) pullup(01)*/
-    clear_bit(gpiob_mode, 2*BTN+0);
-    clear_bit(gpiob_mode, 2*BTN+1);
-
-    set_bit(gpiob_pullup, 2*BTN+0);
-    clear_bit(gpiob_pullup, 2*BTN+1);
+    gpioC->MODER &= ~(1 << 2*LED_POS+1);
+    gpioC->ODR |= (1 << LED_POS);
 }
 
 void sleep(uint32_t ms){
@@ -50,44 +49,18 @@ void sleep(uint32_t ms){
 }
 
 void toggle_led(uint32_t pos){
-    toggle_bit(gpioc_out, pos);
+    gpioC->ODR ^= (1 << LED_POS);
     sleep(DELAY);
-}
-
-void led_off(uint32_t pos){
-    set_bit(gpioc_out, pos);
-    sleep(100);
-}
-
-bool button_pressed(uint32_t pos){
-    uint32_t btn_value = *gpiob_in & (1U << pos);
-    if(button_state & btn_value == 0){
-        sleep(10); // Debounce time
-        btn_value = *gpiob_in & (1U << pos);
-        if(btn_value == 0){
-            button_state = btn_value;
-            return 1;
-        } else {
-            button_state = btn_value;
-            return 0;
-        }
-    } else {
-        button_state = btn_value;
-        return 0;
-    }
 }
 
 int main(void){
     bool state = false;
     initialize();
-    while(1){
-        if(button_pressed(BTN) == 1){
-            state = !state;
-        }
-        if(state){
-            toggle_led(LED_POS);
-        } else {
-            led_off(LED_POS);
-        }
+    while(1) {
+        toggle_led(LED_POS);
     }
+    return 0;
 }
+
+
+
