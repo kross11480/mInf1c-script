@@ -1,7 +1,7 @@
 #include "stdbool.h"
 #include "inttypes.h"
 
-#define LED_POS 5
+#define LED_POS 6
 #define DELAY 500
 
 volatile uint32_t *const rcc_clock_enable = (uint32_t *) 0x4002104C;
@@ -57,7 +57,7 @@ int main(void){
     bool state = false;
     initialize();
     while(1) {
-        toggle_led(LED_POS);
+
     }
     return 0;
 }
