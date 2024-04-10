@@ -77,9 +77,9 @@ void toggle_led(uint32_t pos){
 ```
 In this example the bit in ODR corresponding to the LED is inverted. This would change the state of LED. The bitwise operations are used for bit masking. 
 ## Bit Masking
-The main reason behind bit masking operations is to change only the target bit and not all the 32 bits in the register. For example in '*gpio_cout =0x4;', we write 1 to bit 2 and all other bits to 0. This means we not only switch off the led on pin C2, but also inadvertently switch on other LEDs if there is one from C0,C1, C3, .... There
+The main reason behind bit masking operations is to change only the target bit and not all the 32 bits in the register. For example in '*gpio_cout =0x4;', we write 1 to bit 2 and all other bits to 0. This means we not only switch off the led on pin C2, but also inadvertently switch on other LEDs if there is one from C0,C1, C3, .... One can have weird problems if bit masking operations are not used or used incorrectly. 
 
-* bit masking
+
 * arrays
 * structs
 * volatile

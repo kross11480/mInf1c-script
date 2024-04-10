@@ -39,6 +39,7 @@ add_link_options(-Wl,-gc-sections,--print-memory-usage)
 add_link_options(-mcpu=cortex-m4 -mthumb -mthumb-interwork)
 add_link_options(-T ${LINKER_SCRIPT})
 
-add_executable(ledon.elf "Src/ledon.c" ${SRCS} ${LINKER_SCRIPT})
+add_executable(ledon.elf ${SRCS} ${LINKER_SCRIPT} Src/ledon.c)
 add_executable(led.elf "Src/main.c" ${SRCS} ${LINKER_SCRIPT})
 add_executable(bm.elf "Src/baremetal.c" ${SRCS} ${LINKER_SCRIPT})
+add_executable(switchled_int.elf "Src/switchled_int.c" ${SRCS} ${LINKER_SCRIPT})
