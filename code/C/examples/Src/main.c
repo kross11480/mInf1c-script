@@ -57,7 +57,7 @@ int main(void){
     bool state = false;
     initialize();
     while(1) {
-
+    toggle_led(LED_POS);
     }
     return 0;
 }

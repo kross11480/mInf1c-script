@@ -41,5 +41,5 @@ add_link_options(-T ${LINKER_SCRIPT})
 
 add_executable(ledon.elf ${SRCS} ${LINKER_SCRIPT} Src/ledon.c)
 add_executable(led.elf "Src/main.c" ${SRCS} ${LINKER_SCRIPT})
-add_executable(bm.elf "Src/baremetal.c" ${SRCS} ${LINKER_SCRIPT})
-add_executable(switchled_int.elf "Src/switchled_int.c" ${SRCS} ${LINKER_SCRIPT})
+#add_executable(bm.elf "Src/baremetal.c" ${SRCS} ${LINKER_SCRIPT})
+#add_executable(switchled_int.elf "Src/switchled_int.c" ${SRCS} ${LINKER_SCRIPT})
