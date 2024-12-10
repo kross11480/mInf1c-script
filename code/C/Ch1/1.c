@@ -1,8 +1,8 @@
 int main(void){
-int *a;
-    unsigned int *rcc_ahb2enr = (unsigned int *) 0x40021000 + 0x4c;
+
+    unsigned int *rcc_ahb2enr = (unsigned int *) (0x40021000 + 0x4c);
     unsigned int *gpio_a_moder = (unsigned int *) 0x48000000;
-    unsigned int *gpio_a_odr = (unsigned int *) 0x48000000 + 0x14;
+    unsigned int *gpio_a_odr = (unsigned int *) (0x48000000 + 0x14);
 
     //initialize gpio
     *rcc_ahb2enr |= 0x1; //Enable Clock for GPIOA
