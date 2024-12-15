@@ -1,10 +1,12 @@
-/*replace delay with Systick Timer*/
+/* Task: replace delay with Systick Timer*/
+
 // 1. Datasheet: pg 246 Programming Manual
 // 2. Init: reload reg
 // 3. Function
 // todo: better tick handling, use volatile, define or assign base address, function prototypes, void (*const vector_table[])(void)
 
-typedef unsigned int uint32_t;
+#include<stdint.h>
+#include<stm32g431xx.h>
 
 typedef struct {
     uint32_t CTRL;
@@ -12,38 +14,18 @@ typedef struct {
     uint32_t VAL;
 } SysTick_t;
 
-typedef struct {
-    volatile uint32_t MODER;    // GPIO mode register
-    volatile uint32_t OTYPER;   // GPIO output type register
-    volatile uint32_t OSPEEDR;  // GPIO output speed register
-    volatile uint32_t PUPDR;    // GPIO pull-up/pull-down register
-    volatile uint32_t IDR;      // GPIO input data register
-    volatile uint32_t ODR;      // GPIO output data register
-    volatile uint32_t BSRR;     // GPIO bit set/reset register
-    volatile uint32_t LCKR;     // GPIO lock register
-    volatile uint32_t AFR[2];   // GPIO alternate function registers
-} GPIO;
-
-typedef struct {
-    uint32_t REGS_NOTNEEDEDNOW[19];
-    uint32_t AHB2ENR;  // AHB2 peripheral clock enable register
-} RCC_typeDef;
 
 #define SysTick ((SysTick_t *) 0xE000E010)
 
-/* Base Address of Peripheral */
-GPIO *GPIOA = (GPIO *) 0x48000000;
-RCC_typeDef *RCC = (RCC_typeDef *) 0x40021000;
-
-void SysTick_Config(unsigned int one_ms){
+uint32_t SysTick_Init(uint32_t delay){
     SysTick->CTRL |= 0x3;
-    SysTick->LOAD = one_ms;
+    SysTick->LOAD = delay;
+    return 0;
 }
 
-volatile uint32_t msTicks = 0;                              /* Variable to store millisecond ticks */
-
-void SysTick_Handler(void)  {                               /* SysTick interrupt Handler. */
-    msTicks++;                                                /* See startup file startup_LPC17xx.s for SysTick vector */
+/* SysTick interrupt Handler. */
+void SysTick_Handler(void)  {
+    GPIOA->ODR ^= 0x2;
 }
 
 void setup(){
@@ -52,17 +34,13 @@ void setup(){
     GPIOA->MODER &= ~(0xC);
     GPIOA->MODER |= (0x4);
 
-    SysTick_Config(2000000/1000);
+    SysTick_Config(500 * 2000000/1000);
 }
 
 
 int main(){
     setup();
     while(1){
-        if(msTicks == 500){
-            GPIOA->ODR ^= 0x2;
-            msTicks = 0;
-        }
     }
 }
 

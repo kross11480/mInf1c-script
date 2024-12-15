@@ -5,7 +5,7 @@ int main(void){
     unsigned int *gpio_a_odr = (unsigned int *) (0x48000000 + 0x14);
 
     //initialize gpio
-    *rcc_ahb2enr |= 0x1; //Enable Clock for GPIOA
+    (unsigned int *) (0x40021000 + 0x4c) |= 0x1; //Enable Clock for GPIOA
     *gpio_a_moder |= 0x1; //Output Mode for GPIO
     *gpio_a_moder &= ~(1<<1);
 
