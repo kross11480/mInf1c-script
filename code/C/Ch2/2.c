@@ -1,31 +1,21 @@
-/* typedef create new name for existing data type */
-typedef unsigned int uint32_t;
+// Task: Switch on LED connected to GPIO (PORT A, Pin 1)
+// Access memory mapped peripheral register with pointers
 
-/* struct is user defined datatype containing several named variables */
-typedef struct gpio{
-    uint32_t MODER;
-} GPIO;
+#define GPIOA_BASE 0x48000000
 
+#define GPIOA_MODER *(volatile unsigned int *)(GPIOA_BASE + 0x00)
+#define GPIOA_ODR *(volatile unsigned int *)(GPIOA_BASE + 0x14)
 
 int main(void){
-    uint32_t *rcc_ahb2enr = (uint32_t *) 0x4002104c;
-    uint32_t *gpio_a_odr = (uint32_t *) 0x48000014;
 
-    /* gpioA is a pointer to GPIO Struct and it points to based address of GPIO Peripheral */
-    GPIO *gpioA = (GPIO *) 0x48000000;
+    volatile unsigned int *RCC_AHB2ENR = (volatile unsigned int *)(0x40021000 + 0x4C);
+    unsigned int pin = 1; //LED connected to PA1
 
-    //initialize gpio
-    *rcc_ahb2enr |= 0x1; //Enable Clock for GPIOA
+    *RCC_AHB2ENR |= 0x1; //Enable GPIOA Clock
+    GPIOA_MODER &= ~(3<<(2*pin)); // Set Port
+    GPIOA_MODER |= (0x1<<(2*pin));
 
-    /* What is -> opearator, access to member */
-    //(*gpioA).MODER &= ~(0x3);
-    gpioA->MODER &= ~(0x3<<2);
-    gpioA->MODER |= (0x1<<2);
+    GPIOA_ODR &= ~(0x1<<pin);
 
-    //switch on led 0
-    *gpio_a_odr &= ~(0x1<<1);
-
-    while(1){
-    }
+    return 0;
 }
-
