@@ -1,11 +1,11 @@
 1. Minimal Program
 2. Peripheral Programming with Pointer: Switch on LED
 3. Peripheral Programming with pointer of Structure
-5. Blink an LED (delay counter in SW)
-4. Blink an LED (delay counter in HW, Polling)
-5. Blink an LED (delay counter in HW, interrupts)
+4. Blink an LED (delay counter in SW)
+5. Blink an LED (delay counter in HW, Polling)
 6. Blink an LED on button press (Polling)
-7. Blink an LED on button press (Interrupt)
+7. Blink an LED (delay counter in HW, interrupts)
+8. Blink an LED on button press (Interrupt)
 8. Debouncing
 9. Project: Knightrider lights
 
