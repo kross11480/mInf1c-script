@@ -26,13 +26,73 @@ typedef struct {
     uint32_t AHB2ENR;  // AHB2 peripheral clock enable register
 } RCC_typeDef;
 
+typedef struct {
+    uint32_t CTRL;
+    uint32_t LOAD;
+    uint32_t VAL;
+} SysTick_t;
+
 /* Base Address of Peripheral */
 #define GPIOA ((GPIO_typeDef *) 0x48000000)
 #define RCC ((RCC_typeDef *) 0x40021000) //Operator precedence remove ()
+#define SysTick ((SysTick_t *) 0xE000E010)
+
+#define TICKS_PER_MS 16000
 
 void gpio_set_mode(GPIO_typeDef *gpio, uint16_t pin, moder_t mode);
 void gpio_write(GPIO_typeDef *gpio, uint16_t pin, sig_t val);
 void gpio_toggle(GPIO_typeDef *gpio, uint16_t pin);
+void delay(uint32_t ms);
+
+void systick_init();
+uint32_t systick_start();
+uint32_t systick_get_elapsedtime_ms(uint32_t start);
+void systick_delay_ms(uint32_t start, uint32_t time_in_ms);
+
+void systick_init()
+{
+    SysTick->CTRL |= (1 << 2); //1: Clock 0: Clock/8.
+    SysTick->CTRL |= (1 << 0); //start timer
+    SysTick->LOAD = 0xFFFFFF;
+}
+
+uint32_t systick_start()
+{
+    uint32_t start = SysTick->VAL;
+    return start;
+}
+
+void systick_delay_ms(uint32_t start, uint32_t time_in_ms)
+{
+    while (systick_get_elapsedtime_ms(start) < time_in_ms);
+}
+
+uint32_t systick_get_elapsedtime_ms(uint32_t start)
+{
+    uint32_t current_time = SysTick->VAL;
+    if (current_time < start)
+        return (start - current_time)/TICKS_PER_MS;
+    else
+        return (start + (0xFFFFFF - current_time))/TICKS_PER_MS;
+}
+
+void main(void){
+    uint16_t pin = 1; //LEDx connected to PAx in StefiLite
+    uint32_t start = 0;
+
+    //initialize rcc, gpio, timer
+    RCC->AHB2ENR |= 0x1; //Enable Clock for GPIOA
+    gpio_set_mode(GPIOA, pin, MODER_OUTPUT);
+    gpio_write(GPIOA, pin, HIGH);
+    systick_init();
+
+    while (1)
+    {
+        start = systick_start();
+        gpio_toggle(GPIOA, pin);
+        systick_delay_ms(start, elapsed_time);
+    }
+}
 
 void gpio_set_mode(GPIO_typeDef *gpio, uint16_t pin, moder_t mode)
 {
@@ -51,22 +111,7 @@ void gpio_toggle(GPIO_typeDef *gpio, uint16_t pin)
 }
 
 void delay(uint32_t ms) {
-    uint32_t count = ms * 2000; //Approx Factor
+    uint32_t count = ms * 1865; //Approx Factor
     while (count--)
         __asm__("NOP"); //6-8 Cycles per loop => @16 Mhz
-}
-
-void main(void){
-    uint16_t pin = 1; //LEDx connected to PAx in StefiLite
-
-    //initialize gpio
-    RCC->AHB2ENR |= 0x1; //Enable Clock for GPIOA
-    gpio_set_mode(GPIOA, pin, MODER_OUTPUT);
-    gpio_write(GPIOA, pin, HIGH);
-
-    while (1)
-    {
-        gpio_toggle(GPIOA, pin);
-        delay(500);
-    }
 }

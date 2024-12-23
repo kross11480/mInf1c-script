@@ -9,6 +9,7 @@ add_executable(1.elf 1.c startup.c)
 add_executable(2.elf 2.c startup.c)
 add_executable(3.elf 3.c startup.c)
 add_executable(4.elf 4.c startup.c)
+add_executable(5.elf 5.c startup.c)
 
 set(HEX_FILE ${PROJECT_BINARY_DIR}/${TARGET_NAME}.hex)
 set(BIN_FILE ${PROJECT_BINARY_DIR}/${TARGET_NAME}.bin)
