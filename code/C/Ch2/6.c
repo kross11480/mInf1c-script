@@ -1,4 +1,4 @@
-//Task: Blink an LED with HW Timer (SysTick)
+//Task: Blink an LED when button is pressed and switches off when released
 //Use Functions
 
 // Task: Switch on LED connected to GPIO (PORT A, Pin 1)
@@ -8,6 +8,7 @@ typedef unsigned short uint16_t;
 typedef unsigned char uint8_t;
 typedef enum {LOW, HIGH} sig_t;
 typedef enum {MODER_INPUT, MODER_OUTPUT, MODER_AF, MODER_ANALOG} moder_t;
+typedef enum {NONE, PULL_UP, PULL_DOWN} pupdr_t;
 
 typedef struct {
     volatile uint32_t MODER;    // 0x00: mode register
@@ -34,20 +35,89 @@ typedef struct {
 
 /* Base Address of Peripheral */
 #define GPIOA ((GPIO_typeDef *) 0x48000000)
+#define GPIOB ((GPIO_typeDef *) 0x48000400)
+
 #define RCC ((RCC_typeDef *) 0x40021000) //Operator precedence remove ()
 #define SysTick ((SysTick_t *) 0xE000E010)
 
 #define TICKS_PER_MS 16000
 
 void gpio_set_mode(GPIO_typeDef *gpio, uint16_t pin, moder_t mode);
+void gpio_set_pupd(GPIO_typeDef *gpio, uint16_t pin, pupdr_t pupd);
 void gpio_write(GPIO_typeDef *gpio, uint16_t pin, sig_t val);
+sig_t gpio_read(GPIO_typeDef *gpio, uint16_t pin);
 void gpio_toggle(GPIO_typeDef *gpio, uint16_t pin);
+
 void delay(uint32_t ms);
 
 void systick_init();
 uint32_t systick_start();
 uint32_t systick_get_elapsedtime_ms(uint32_t start);
 void systick_delay_ms(uint32_t start, uint32_t time_in_ms);
+
+void gpio_set_pupd(GPIO_typeDef *gpio, uint16_t pin, pupdr_t pupd)
+{
+    gpio->PUPDR &= ~(3<<(2*pin));
+    gpio->PUPDR |= (pupd<<(2*pin));
+}
+
+sig_t gpio_read(GPIO_typeDef *gpio, uint16_t pin)
+{
+    return (gpio->IDR & (1<<pin) ? LOW : HIGH);
+}
+
+
+
+void main(void){
+    uint16_t pin_led = 1; //LEDx connected to PAx in StefiLite
+    uint16_t pin_button = 7; //Button_x connected to PBx in StefiLite
+    uint32_t start = 0;
+
+    //initialize rcc, gpio, timer
+    RCC->AHB2ENR |= 0x1; //Enable Clock for GPIOA
+    RCC->AHB2ENR |= 0x2; //Enable Clock for GPIOB
+
+    // set output mode for led pin and switch off led
+    gpio_set_mode(GPIOA, pin_led, MODER_OUTPUT);
+    gpio_write(GPIOA, pin_led, HIGH);
+
+    //set input mode for push button
+    gpio_set_mode(GPIOB, pin_button, MODER_INPUT);
+    gpio_set_pupd(GPIOB, pin_button, PULL_UP);
+    systick_init();
+
+    while (1)
+    {
+        start = systick_start();
+        if(gpio_read(GPIOB, pin_button) == HIGH)
+            gpio_toggle(GPIOA, pin_led);
+        else
+            gpio_write(GPIOA, pin_led, HIGH);
+        systick_delay_ms(start, 500);
+    }
+}
+
+void gpio_set_mode(GPIO_typeDef *gpio, uint16_t pin, moder_t mode)
+{
+    gpio->MODER &= ~(3<<(2*pin));
+    gpio->MODER |= (mode<<(2*pin));
+}
+
+void gpio_write(GPIO_typeDef *gpio, uint16_t pin, sig_t val)
+{
+    gpio->BSRR = (val << pin);
+}
+
+void gpio_toggle(GPIO_typeDef *gpio, uint16_t pin)
+{
+    gpio->ODR ^= (1 << pin);
+}
+
+void delay(uint32_t ms) {
+    uint32_t count = ms * 1865; //Approx Factor
+    while (count--)
+        __asm__("NOP"); //6-8 Cycles per loop => @16 Mhz
+}
 
 void systick_init()
 {
@@ -74,44 +144,4 @@ uint32_t systick_get_elapsedtime_ms(uint32_t start)
         return (start - current_time)/TICKS_PER_MS;
     else
         return (start + (0xFFFFFF - current_time))/TICKS_PER_MS;
-}
-
-void main(void){
-    uint16_t pin = 2; //LEDx connected to PAx in StefiLite
-    uint32_t start = 0;
-
-    //initialize rcc, gpio, timer
-    RCC->AHB2ENR |= 0x1; //Enable Clock for GPIOA
-    gpio_set_mode(GPIOA, pin, MODER_OUTPUT);
-    gpio_write(GPIOA, pin, HIGH);
-    systick_init();
-
-    while (1)
-    {
-        start = systick_start();
-        gpio_toggle(GPIOA, pin);
-        systick_delay_ms(start, 500);
-    }
-}
-
-void gpio_set_mode(GPIO_typeDef *gpio, uint16_t pin, moder_t mode)
-{
-    gpio->MODER &= ~(3<<(2*pin));
-    gpio->MODER |= (mode<<(2*pin));
-}
-
-void gpio_write(GPIO_typeDef *gpio, uint16_t pin, sig_t val)
-{
-    gpio->BSRR = (val << pin);
-}
-
-void gpio_toggle(GPIO_typeDef *gpio, uint16_t pin)
-{
-    gpio->ODR ^= (1 << pin);
-}
-
-void delay(uint32_t ms) {
-    uint32_t count = ms * 1865; //Approx Factor
-    while (count--)
-        __asm__("NOP"); //6-8 Cycles per loop => @16 Mhz
 }
