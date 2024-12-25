@@ -1,5 +1,5 @@
-//Task: Blink an LED when button is pressed and switches off when pressed again
-//Use n
+//Task: Blink an LED when button is pressed and switches off when released
+//Do not use blocking delay, but elapsed time so as to read buttons (withOUT debouncing)
 
 // Task: Switch on LED connected to GPIO (PORT A, Pin 1)
 // Access memory mapped peripheral register with pointer to struct
@@ -52,26 +52,21 @@ void delay(uint32_t ms);
 
 void systick_init();
 uint32_t systick_start();
-uint32_t systick_get_elapsedtime_ms(uint32_t start);
+void systick_stop();
+uint32_t systick_get_millis(uint32_t start);
 void systick_delay_ms(uint32_t start, uint32_t time_in_ms);
-
-void gpio_set_pupd(GPIO_typeDef *gpio, uint16_t pin, pupdr_t pupd)
-{
-    gpio->PUPDR &= ~(3<<(2*pin));
-    gpio->PUPDR |= (pupd<<(2*pin));
-}
-
-sig_t gpio_read(GPIO_typeDef *gpio, uint16_t pin)
-{
-    return ((gpio->IDR & (1<<pin)) ? HIGH : LOW);
-}
-
 
 
 void main(void){
     uint16_t pin_led = 1; //LEDx connected to PAx in StefiLite
     uint16_t pin_button = 7; //Button_x connected to PBx in StefiLite
-    uint32_t start = 0;
+
+    sig_t button_state = HIGH;
+    sig_t prev_button_state = HIGH;
+
+    uint32_t now = 0;
+
+
 
     //initialize rcc, gpio, timer
     RCC->AHB2ENR |= 0x1; //Enable Clock for GPIOA
@@ -88,12 +83,28 @@ void main(void){
 
     while (1)
     {
-        start = systick_start();
-        if(gpio_read(GPIOB, pin_button) == LOW)
-            gpio_toggle(GPIOA, pin_led);
-        else
+        button_state = gpio_read(GPIOB, pin_button);
+        //if state changes and timer not running, start timer
+        if((button_state != prev_button_state))
+        {
+            now = systick_start();
             gpio_write(GPIOA, pin_led, HIGH);
-        systick_delay_ms(start, 500);
+        }
+        switch (button_state)
+        {
+        case HIGH:
+            systick_stop();
+            break;
+        case LOW:
+            if(systick_get_millis(now) >= 500)
+            {
+                gpio_toggle(GPIOA, pin_led);
+                // reset timer
+                now = systick_start();
+            }
+            break;
+        }
+        prev_button_state = button_state;
     }
 }
 
@@ -113,6 +124,17 @@ void gpio_toggle(GPIO_typeDef *gpio, uint16_t pin)
     gpio->ODR ^= (1 << pin);
 }
 
+void gpio_set_pupd(GPIO_typeDef *gpio, uint16_t pin, pupdr_t pupd)
+{
+    gpio->PUPDR &= ~(3<<(2*pin));
+    gpio->PUPDR |= (pupd<<(2*pin));
+}
+
+sig_t gpio_read(GPIO_typeDef *gpio, uint16_t pin)
+{
+    return (gpio->IDR & (1<<pin) ? HIGH : LOW);
+}
+
 void delay(uint32_t ms) {
     uint32_t count = ms * 1865; //Approx Factor
     while (count--)
@@ -122,22 +144,27 @@ void delay(uint32_t ms) {
 void systick_init()
 {
     SysTick->CTRL |= (1 << 2); //1: Clock 0: Clock/8.
-    SysTick->CTRL |= (1 << 0); //start timer
     SysTick->LOAD = 0xFFFFFF;
 }
 
 uint32_t systick_start()
 {
+    SysTick->CTRL |= (1 << 0); //start timer
     uint32_t start = SysTick->VAL;
     return start;
 }
 
-void systick_delay_ms(uint32_t start, uint32_t time_in_ms)
+void systick_stop()
 {
-    while (systick_get_elapsedtime_ms(start) < time_in_ms);
+    SysTick->CTRL |= (0 << 0); //stop timer
 }
 
-uint32_t systick_get_elapsedtime_ms(uint32_t start)
+void systick_delay_ms(uint32_t start, uint32_t time_in_ms)
+{
+    while (systick_get_millis(start) < time_in_ms);
+}
+
+uint32_t systick_get_millis(uint32_t start)
 {
     uint32_t current_time = SysTick->VAL;
     if (current_time < start)

@@ -83,7 +83,7 @@ void main(void){
     //initialize rcc, gpio, timer
     RCC->AHB2ENR |= 0x1; //Enable Clock for GPIOA
     gpio_set_mode(GPIOA, pin, MODER_OUTPUT);
-    gpio_write(GPIOA, pin, HIGH);
+    gpio_write(GPIOA, pin, LOW);
     systick_init();
 
     while (1)
