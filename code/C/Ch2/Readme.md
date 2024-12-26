@@ -6,8 +6,8 @@
 6. Blink an LED on button press (Polling)
 7. Blink an LED (delay counter in HW, interrupts)
 8. Blink an LED on button press (Interrupt)
-8. Debouncing
-9. Project: Knightrider lights
+9. Debouncing
+10. Project: Knightrider lights
 
 Concepts:
 1. Tools to generate Binary (Machine Code) : What is the size of the binary?
@@ -40,5 +40,4 @@ Minimal program switching on an led in STefi-lite Platform
 ## Command Line Tools
 arm-none-eabi-nm -S --size-sort 1.elf
 arm-none-eabi-readelf -S 1.elf
-arm-none-eabi-objdump -d --section=.text 1.elf
-
+arm-none-eabi-objdump -d --section=.text 1.elfBILD.DE

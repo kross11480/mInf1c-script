@@ -1,8 +1,6 @@
 //Task: Blink an LED when button is pressed and switches off when released
 //Do not use blocking delay, but elapsed time so as to read buttons (withOUT debouncing)
 
-// Task: Switch on LED connected to GPIO (PORT A, Pin 1)
-// Access memory mapped peripheral register with pointer to struct
 typedef unsigned int uint32_t;
 typedef unsigned short uint16_t;
 typedef unsigned char uint8_t;
