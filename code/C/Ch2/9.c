@@ -6,35 +6,40 @@ typedef enum {OFF, LED_CHASER} state_t;
 #define NUM_LEDS 4
 #define PERIOD 250
 
-void main(void){
-    GPIO_typeDef *port_led[NUM_LEDS] = {GPIOA, GPIOA, GPIOA, GPIOA};
-    uint16_t pin_led[NUM_LEDS] = {0, 1, 2, 3};
+GPIO_typeDef *port_led[NUM_LEDS] = {GPIOA, GPIOA, GPIOA, GPIOA};
+uint16_t pin_led[NUM_LEDS] = {0, 1, 2, 3};
+GPIO_typeDef *port_button = GPIOB;
+uint16_t pin_button = 7; //Button_x connected to PBx in StefiLite
+void setup(void);
 
-    GPIO_typeDef *port_button = GPIOB;
-    uint16_t pin_button = 7; //Button_x connected to PBx in StefiLite
-
-    sig_t button_state;
-    sig_t prev_button_state = HIGH;
-    state_t app_state = OFF;
-
-    uint32_t now = 0;
-    uint16_t j = 0;
-    int dir = 1;
-
+void setup(void)
+{
     //initialize rcc, gpio, timer
     RCC->AHB2ENR |= 0x1; //Enable Clock for GPIOA
     RCC->AHB2ENR |= 0x2; //Enable Clock for GPIOB
 
     // set output mode for led pin and switch off led
     for(uint32_t i = 0; i < NUM_LEDS; i++){
-    gpio_set_mode(port_led[i], pin_led[i], MODER_OUTPUT);
-    gpio_write(port_led[i], pin_led[i], HIGH);
+        gpio_set_mode(port_led[i], pin_led[i], MODER_OUTPUT);
+        gpio_write(port_led[i], pin_led[i], HIGH);
     }
 
     //set input mode for push button
     gpio_set_mode(port_button, pin_button, MODER_INPUT);
     gpio_set_pupd(port_button, pin_button, PULL_UP);
     systick_init();
+}
+
+void main(void){
+
+    sig_t button_state;
+    sig_t prev_button_state = HIGH;
+    state_t app_state = OFF;
+    uint32_t now = 0;
+    uint16_t j = 0;
+    int dir = 1;
+
+    setup();
 
     while (1)
     {

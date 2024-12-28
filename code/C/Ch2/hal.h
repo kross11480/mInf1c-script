@@ -1,3 +1,6 @@
+#ifndef HAL_H
+#define HAL_H
+
 typedef unsigned int uint32_t;
 typedef unsigned short uint16_t;
 typedef unsigned char uint8_t;
@@ -35,9 +38,7 @@ typedef struct {
 #define RCC ((RCC_typeDef *) 0x40021000) //Operator precedence remove ()
 #define SysTick ((SysTick_t *) 0xE000E010)
 
-
-
-void gpio_set_mode(GPIO_typeDef *gpio, uint16_t pin, moder_t mode);
+__attribute__((weak)) void gpio_set_mode(GPIO_typeDef *gpio, uint16_t pin, moder_t mode);
 void gpio_set_pupd(GPIO_typeDef *gpio, uint16_t pin, pupdr_t pupd);
 void gpio_write(GPIO_typeDef *gpio, uint16_t pin, sig_t val);
 sig_t gpio_read(GPIO_typeDef *gpio, uint16_t pin);
@@ -56,3 +57,5 @@ uint32_t systick_get_millis(uint32_t start);
 void systick_delay_ms(uint32_t start, uint32_t time_in_ms);
 
 sig_t debounce_button(GPIO_typeDef *gpio, uint16_t pin);
+
+#endif

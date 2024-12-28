@@ -1,5 +1,4 @@
 #include "hal.h"
-
 void gpio_set_mode(GPIO_typeDef *gpio, uint16_t pin, moder_t mode)
 {
     gpio->MODER &= ~(3<<(2*pin));
