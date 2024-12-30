@@ -8,12 +8,12 @@ extern void main();
 
 void Reset_Handler(void)
 {
-    /* Copy init data from FLASH to RAM */
-    // unsigned int *init_data_flash = &_sidata;
-    //
-    // for (unsigned int *data_sram = &_sdata; data_sram < &_edata;) {
-    //     *data_sram++ = *init_data_flash++;
-    // }
+
+    unsigned int *init_data_flash = &_sidata;
+    /* Copy init data from FLASH to RAM: otherwise global var does not work */
+    for (unsigned int *data_sram = &_sdata; data_sram < &_edata;) {
+        *data_sram++ = *init_data_flash++;
+    }
 
     /* Branch to main() function */
     main();
