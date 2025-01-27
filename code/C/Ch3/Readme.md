@@ -7,6 +7,6 @@
 7. I2C Read/Write Function
 8. I2C Bit-banging
 9. Project: Temperature sensor
-
+10. 
 Concepts:
 1. Connectivity

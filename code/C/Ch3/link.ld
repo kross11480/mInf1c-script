@@ -29,4 +29,7 @@ SECTIONS
 		*(COMMON)
 		_ebss = .;
 	} > RAM
+
+	. = ALIGN(8);
+    _end = .;
 }

@@ -1,7 +1,10 @@
 #include "hal.h"
 #include "stddef.h"
 
-//Task: Uart, Character Output @115200 Baud, 8 Bits, even parity, 1 stop bits
+//Task: Uart, Character Output @115200 Baud, 8 Bits, none parity, 1 stop bits, UTF-8
+//Note: New board needs ST-Link Firmware Upgrade
+//Note: Use Macros for Baud rate
+//Note:
 GPIO_typeDef *port_uart_tx = GPIOA;
 GPIO_typeDef *port_uart_rx = GPIOA;
 uint16_t pin_uart_tx = 2;
@@ -67,13 +70,15 @@ void uart_configure(){
     //UM2397: USART2 (PA2/PA3) connected to STLINK-V3E Virtual COM port.
     RCC->APB1ENR |= (1 << 17); //switch on UART2
     RCC->AHB2ENR |= (1 << 0);
-    gpio_set_mode(port_uart_tx, pin_uart_tx, MODER_AF);
-    gpio_set_mode(port_uart_rx, pin_uart_rx, MODER_AF);
+
     gpio_set_alternate_function(port_uart_tx, pin_uart_tx, AF7);
     gpio_set_alternate_function(port_uart_rx, pin_uart_rx, AF7);
+    gpio_set_mode(port_uart_tx, pin_uart_tx, MODER_AF);
+    gpio_set_mode(port_uart_rx, pin_uart_rx, MODER_AF);
+
     USART2->CR1 = 0;
-    USART2->BRR = 1666; //16000000/115200
-    USART2->CR1 |= (1 << 0) | (1 << 2) | (1 << 3);
+    USART2->BRR = 16000000/115200; //16000000/115200
+    USART2->CR1 |= (1 << 0) | (1 << 3) | (1 << 2);
 }
 
 void uart_poll_out(unsigned char out_char)
@@ -109,5 +114,6 @@ void main(void){
     };
 
     uart_configure();
+    uart_tx(wordsBuffer, sizeof(wordsBuffer));
     uart_tx(wordsBuffer, sizeof(wordsBuffer));
 }

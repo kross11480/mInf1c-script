@@ -1,10 +1,10 @@
+#include <unistd.h>
+#include<stdio.h>
+#include <sys/stat.h>
 #include "hal.h"
-#include "stddef.h"
 
-//Task: Uart, Character Output @9600 Baud, 8 Bits, even parity, 1 stop bits
-//Note: New board needs ST-Link Firmware Upgrade
-//Note: Problems on reset may come from unstable state, (set AF before Mode)
-//Note: View> Tool Windows> Serial Connections Plugin
+//Task: Uart, Character Output @115200 Baud, 8 Bits, even parity, 1 stop bits
+//Note: printf 5k, Printf_float 12K
 
 GPIO_typeDef *port_uart_tx = GPIOA;
 GPIO_typeDef *port_uart_rx = GPIOA;
@@ -100,28 +100,45 @@ void uart_poll_out(UART_typeDef *uart, unsigned char out_char)
 unsigned char uart_poll_in(UART_typeDef *uart)
 {
     while ( (uart->ISR & (1 << 5)) != (1 << 5));
-    delay_ms(1);
     return (unsigned char) (uart->RDR & 0xFF);
 }
 
-void uart_tx(UART_typeDef *uart, const uint8_t *buf, size_t len)
-{
-    for(uint32_t i = 0; i < len; i++)
-    {
-        uart_poll_out(uart, buf[i]);
+int _write(int file, const char *ptr, int len) {
+    if (file == STDOUT_FILENO || file == STDERR_FILENO) {
+        for (int i = 0; i < len; i++) {
+            uart_poll_out(USART2, ptr[i]);
+        }
+        return len;
     }
+    return -1;
 }
 
-void uart_rx(const uint8_t *buf, size_t len)
-{
+void *_sbrk(int incr) {
+    extern char _end;
+    static unsigned char *heap = NULL;
+    unsigned char *prev_heap;
+    if (heap == NULL) heap = (unsigned char *) &_end;
+    prev_heap = heap;
+    heap += incr;
+    return prev_heap;
 }
 
-void main(void){
+void _fstat(int fd, struct stat *st) {}
+void _close(int fd) {}
+void _isatty(int fd) {}
+void _lseek(int fd, int ptr, int dir) {}
+void _read(int fd, char *ptr, int len) {}
+void _kill(int pid, int sig) {}
+void _getpid(void) {}
+
+_Noreturn void _exit(int status) {
+    (void) status;
+    for (;;) __asm__ volatile("BKPT #0");
+}
+
+int main() {
+    unsigned int test = 0x012346;
     uart_configure();
-    unsigned char ch = 'a';
-    while(1)
-    {
-        unsigned char ch = uart_poll_in(USART2);
-        uart_poll_out(USART2, ch);
-    }
+    printf("Hello, World! %x \r\n", test);
+    return 0;
 }
