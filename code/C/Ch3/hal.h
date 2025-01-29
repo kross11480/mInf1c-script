@@ -1,9 +1,11 @@
 #ifndef HAL_H
 #define HAL_H
 
-typedef unsigned int uint32_t;
-typedef unsigned short uint16_t;
-typedef unsigned char uint8_t;
+#include <stdio.h>
+#include <stdint.h>
+//typedef unsigned int uint32_t;
+//typedef unsigned short uint16_t;
+//typedef unsigned char uint8_t;
 typedef enum {LOW, HIGH} sig_t;
 
 
@@ -49,7 +51,6 @@ void gpio_set_pupd(GPIO_typeDef *gpio, uint16_t pin, pupdr_t pupd);
 void gpio_write(GPIO_typeDef *gpio, uint16_t pin, sig_t val);
 sig_t gpio_read(GPIO_typeDef *gpio, uint16_t pin);
 void gpio_toggle(GPIO_typeDef *gpio, uint16_t pin);
-
 /*********************************************************************/
 /* SysTick Timer Hardware Abstraction layer*/
 /*********************************************************************/
