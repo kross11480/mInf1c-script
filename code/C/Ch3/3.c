@@ -138,7 +138,11 @@ _Noreturn void _exit(int status) {
 
 int main() {
     unsigned int test = 0x012346;
+    float pi = 3.14;
     uart_configure();
-    printf("Hello, World! %x \r\n", test);
+    printf("Hello, World! %x \r\n", test); //Hex
+    printf("Float: %f \r\n", pi); //float
+    printf("\x1b[31m" "Hello World \x1b[0m \r\n"); //color
+    printf("\x1b[0m" "Hello World \x1b[0m \r\n");
     return 0;
 }
