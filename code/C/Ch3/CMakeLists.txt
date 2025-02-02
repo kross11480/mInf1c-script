@@ -10,6 +10,7 @@ add_executable(2.elf 2.c startup.c hal.c)
 add_executable(3.elf 3.c startup.c hal.c)
 add_executable(4.elf 4.c startup.c uart.c gpio.c syscalls.c)
 add_executable(5.elf 5.c startup.c uart.c gpio.c syscalls.c)
+add_executable(6.elf 6.c startup.c gpio.c)
 
 
 set(HEX_FILE ${PROJECT_BINARY_DIR}/${TARGET_NAME}.hex)

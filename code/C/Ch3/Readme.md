@@ -2,7 +2,7 @@
 2. UART Passthrough-Tx and Rx
 3. Strings functions
 4. Simple Printf Function- %lu
-5. Printf support in existing example
+5. Test using assert
 6. Shell
 7. I2C Read/Write Function
 8. I2C Bit-banging

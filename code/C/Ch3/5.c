@@ -26,22 +26,8 @@ void test_add()
     STEFI_ASSERT(7 == add(3,4));
 }
 
-void test_gpio()
-{
-    STEFI_ASSERT((GPIOB->ODR & (1<<8)) == LOW);
-}
-void gpio_init()
-{
-    RCC->AHB2ENR |= 1 << 1; //Clock to Port B
-    //User LED on Port B8 (Default)
-    gpio_set_mode(GPIOB, 8, MODER_OUTPUT);
-    gpio_write(GPIOB, 8, HIGH);
-}
-
 void main(){
     uart_configure();
     printf("\x1b[34m" "UNIT TESTS \x1b[0m \r\n");
     test_add();
-    gpio_init();
-    test_gpio();
 }
