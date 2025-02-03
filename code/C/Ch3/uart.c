@@ -2,6 +2,7 @@
 /* UART/USART                 Hardware Abstraction layer              */
 /**********************************************************************/
 #include "uart.h"
+#include "gpio.h"
 
 typedef struct {
     uint32_t CR1;
@@ -22,10 +23,8 @@ typedef struct {
 #define USART2 ((UART_typeDef *) 0x40004400)
 
 //Default Uart2 on A2,A3
-GPIO_typeDef *port_uart_tx = GPIOA;
-GPIO_typeDef *port_uart_rx = GPIOA;
-uint16_t pin_uart_tx = 2;
-uint16_t pin_uart_rx = 3;
+gpio_id_t port_uart_tx = A2;
+gpio_id_t port_uart_rx = A3;
 UART_typeDef *uart = USART2;
 
 void uart_configure(){
@@ -33,10 +32,10 @@ void uart_configure(){
     RCC->APB1ENR |= (1 << 17); //switch on UART2
     RCC->APB2ENR |= (1 << 14); //UART1
     RCC->AHB2ENR |= (1 << 0); //GPIOA
-    gpio_set_alternate_function(port_uart_tx, pin_uart_tx, AF7);
-    gpio_set_alternate_function(port_uart_rx, pin_uart_rx, AF7);
-    gpio_set_mode(port_uart_tx, pin_uart_tx, MODER_AF);
-    gpio_set_mode(port_uart_rx, pin_uart_rx, MODER_AF);
+    gpio_set_alternate_function(port_uart_tx, AF7);
+    gpio_set_alternate_function(port_uart_rx, AF7);
+    gpio_set_mode(port_uart_tx, MODER_AF);
+    gpio_set_mode(port_uart_rx, MODER_AF);
 
     USART2->CR1 = 0;
     USART2->BRR = 139; //16000000/115200
