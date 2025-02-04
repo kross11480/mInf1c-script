@@ -43,6 +43,12 @@ uint32_t _systick_get_ms()
     return (0xFFFFFF - current_time)/TICKS_PER_MS;
 }
 
+uint32_t _systick_get_s()
+{
+    uint32_t current_time = SysTick->VAL;
+    return (0xFFFFFF - current_time)/TICKS_PER_MS;
+}
+
 void _systick_delay_ms(uint32_t time_in_ms)
 {
     while (_systick_get_ms() < time_in_ms);
