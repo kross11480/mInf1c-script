@@ -39,7 +39,13 @@ add_link_options(-Wl,-gc-sections,--print-memory-usage)
 add_link_options(-mcpu=cortex-m4 -mthumb -mthumb-interwork)
 add_link_options(-T ${LINKER_SCRIPT})
 
-add_executable(ledon.elf ${SRCS} ${LINKER_SCRIPT} Src/ledon.c)
+add_executable(ledon.elf ${LINKER_SCRIPT} Src/ledon.c)
 add_executable(led.elf "Src/main.c" ${SRCS} ${LINKER_SCRIPT})
-#add_executable(bm.elf "Src/baremetal.c" ${SRCS} ${LINKER_SCRIPT})
+add_executable(spiflash.elf ${SRCS} ${LINKER_SCRIPT} Src/spiflash.c)
 #add_executable(switchled_int.elf "Src/switchled_int.c" ${SRCS} ${LINKER_SCRIPT})
+add_custom_target(flash_led openocd -f "${OOCD_ITF}"
+        -f "../st_nucleo_l4.cfg"
+        -c "flash write_image erase build/led.elf"
+        -c "verify_image build/led.elf"
+        -c "reset run"
+        -c "shutdown" DEPENDS ${ARGV0})

@@ -1,7 +1,7 @@
 #include "stdbool.h"
 #include "inttypes.h"
 
-#define LED_POS 6
+#define LED_POS 5
 #define DELAY 500
 
 volatile uint32_t *const rcc_clock_enable = (uint32_t *) 0x4002104C;
