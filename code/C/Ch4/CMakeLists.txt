@@ -6,7 +6,7 @@ project(examples C ASM)
 set(TARGET_NAME 1)
 
 add_executable(1.elf 1.c startup.c gpio.c timer.c)
-add_executable(2.elf 2.c startup.c gpio.c timer.c)
+add_executable(2.elf 2.c startup.c gpio.c timer.c peripheral.c)
 
 set(HEX_FILE ${PROJECT_BINARY_DIR}/${TARGET_NAME}.hex)
 set(BIN_FILE ${PROJECT_BINARY_DIR}/${TARGET_NAME}.bin)

@@ -3,7 +3,8 @@
 #include "gpio.h"
 #include "peripheral.h"
 
-static volatile ticks = 0;
+
+static volatile int ticks = 0;
 uint32_t led_red = A0;
 
 void SysTick_Handler(void)
@@ -16,14 +17,17 @@ void SysTick_Handler(void)
     }
 }
 
-void main(void){
-    RCC->AHB2ENR |= (1 << 0);
-    gpio_write(led_red, HIGH);
-    gpio_set_mode(led_red, MODER_OUTPUT);
+void led_init()
+{
+    peripheral_gpioA_enable(); //enable clock
+    gpio_write(led_red, HIGH); //switch off led
+    gpio_set_mode(led_red, MODER_OUTPUT); //set direction to output
 
+}
+
+void main(void){
     timer_init();
     timer_start();
-
     while(1)
     {
     }
