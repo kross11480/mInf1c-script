@@ -1,10 +1,15 @@
+#include <stddef.h>
 #include "timer.h"
+#include "peripheral.h"
+#include "util.h"
 
 typedef struct {
     uint32_t CTRL;
     uint32_t LOAD;
     uint32_t VAL;
 } SysTick_t;
+
+#define SysTick ((SysTick_t *) 0xE000E010)
 
 typedef struct
 {
@@ -40,7 +45,16 @@ typedef struct
   uint32_t DMAR;        /*!< TIM DMA address for full transfer,        Address offset: 0x3E0 */
 } TIM_t;
 
-#define SysTick ((SysTick_t *) 0xE000E010)
+
+#define TIM1_BASE ((TIM_t *) NULL)
+#define TIM2_BASE ((TIM_t *) 0x40000000)
+#define TIM3_BASE ((TIM_t *) 0x40000400)
+#define TIM4_BASE ((TIM_t *) 0x40000800)
+#define TIM5_BASE ((TIM_t *) NULL)
+#define TIM6_BASE ((TIM_t *) 0x40001000)
+#define TIM7_BASE ((TIM_t *) 0x40001400)
+
+TIM_t *timers[] = {(TIM_t*) SysTick, TIM1_BASE, TIM2_BASE, TIM3_BASE, TIM4_BASE};
 
 void soft_delay_ms(uint32_t time_in_ms) {
     uint32_t count = time_in_ms * 1865; //Approx Factor
@@ -90,18 +104,63 @@ void _systick_delay_ms(uint32_t time_in_ms)
     _systick_restart();
 }
 
-void timer_init(){
-    _systick_init(); //Intialize Systick Clock for 16 tick per us
+void timer_init(const tim_id_t timer){
+    switch (timer)
+    {
+    case SYSTICK:
+        _systick_init(); //Intialize Systick Clock for 16 tick per us
+        break;
+    case TIM2:
+        peripheral_tim2_enable();
+    case TIM3:
+        peripheral_tim3_enable();
+    case TIM4:
+        peripheral_tim4_enable();
+    default:
+        break;
+    }
 }
 
-void timer_start()
+void timer_set_period(const tim_id_t timer_id, uint16_t prescaler, uint32_t period)
 {
-    _systick_start();
+    TIM_t *tim = timers[timer_id];
+    switch(timer_id)
+    {
+    case TIM2:
+    case TIM3:
+    case TIM4:
+        tim->PSC = prescaler - 1; //Set prescaler
+        tim->ARR = period - 1; //Set period
+        break;
+    default:
+        break;
+    }
 }
 
-void timer_stop()
+void timer_start(const tim_id_t timer_id)
 {
-    _systick_stop();
+    TIM_t *tim = timers[timer_id];
+    switch (timer_id)
+    {
+    case SYSTICK:
+        _systick_start();
+        break;
+    case TIM2:
+    case TIM3:
+    case TIM4:
+        tim->CR1 |= BIT(0);
+    }
+}
+
+void timer_stop(const tim_id_t timer_id)
+{
+    switch (timer_id)
+    {
+    case SYSTICK:
+        _systick_stop();
+        break;
+    }
+
 }
 
 uint32_t timer_elapsed_ms()

@@ -1,4 +1,5 @@
 #include "gpio.h"
+#include <stdint.h>
 
 typedef struct {
     volatile uint32_t MODER;    // 0x00: mode register

@@ -1,6 +1,6 @@
-Concepts: Event
+Concepts: Interrupts and Timers
 1. Interrupts: SysTick
-2. Interrupts: External Timer
+2. Interrupts: External Periodic Timer
 3. Multiple Timer Example 
 4. EXTI Example: Read Button 
 5. Debouncing Button with Interrupts, Mode: One Pulse

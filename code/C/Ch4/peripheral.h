@@ -1,8 +1,6 @@
 /**********************************************************************/
 /* RCC (Reset Clock Control) Hardware Abstraction layer               */
 /**********************************************************************/
-#include <stdint.h>
-
 void peripheral_gpioA_enable();
 void peripheral_gpioB_enable();
 

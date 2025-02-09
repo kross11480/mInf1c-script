@@ -1,5 +1,6 @@
 #include "peripheral.h"
-#define BIT(num) (1 << num)
+#include "util.h"
+
 typedef struct {
     uint32_t REGS_NOTNEEDEDNOW[19];
     uint32_t AHB2ENR;  // AHB2 peripheral clock enable register
