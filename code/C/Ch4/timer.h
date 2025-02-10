@@ -18,6 +18,7 @@ void timer_set_mode(); //periodic, oc, ic, pwm
 //void timer_set, uint32_t prescaler, uint32_t period
 void timer_start(const tim_id_t);
 void timer_stop(const tim_id_t);
+uint32_t timer_getcount(const tim_id_t);
 
 uint32_t timer_elapsed_ms();
 void timer_delay_ms(uint32_t time_in_ms);

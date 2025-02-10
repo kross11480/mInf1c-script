@@ -1,18 +1,20 @@
 //Task: Use Peripheral Timer (e.g. TIM0) to blink an LED
+//Note: use non-blocking polling only with flank detection not level
 #include "timer.h"
 #include "gpio.h"
+#include "peripheral.h"
+
 
 uint32_t ticks = 0;
 uint32_t led_red = A0;
 
 void SysTick_Handler(void)
 {
-    ticks++;
-    if(ticks == 500)
-    {
-        gpio_toggle(led_red);
-        ticks = 0;
-    }
+}
+
+void TIM2_IRQHandler(void)
+{
+
 }
 
 void led_init()
@@ -23,11 +25,19 @@ void led_init()
 }
 
 void main(void){
-    // led_init();
-    timer_init(4);
-    timer_set_period(4, 16000, 250);
-    timer_start(4);
+    uint32_t t_now, t_prev=0;
+    led_init();
+    timer_init(2);
+    timer_set_period(2, 16000, 250);
+    timer_start(2);
     while(1)
     {
+        t_now = timer_getcount(2);
+        //Messy code to detect flank and avoid multiple toggles leading to heisenbug
+        if( t_prev == 199 && t_now == 200)
+        {
+            gpio_toggle(led_red);
+        }
+        t_prev = t_now;
     }
 }

@@ -131,6 +131,7 @@ void timer_set_period(const tim_id_t timer_id, uint16_t prescaler, uint32_t peri
     case TIM4:
         tim->PSC = prescaler - 1; //Set prescaler
         tim->ARR = period - 1; //Set period
+        tim->CNT = 0;
         break;
     default:
         break;
@@ -161,6 +162,19 @@ void timer_stop(const tim_id_t timer_id)
         break;
     }
 
+}
+
+uint32_t timer_getcount(const tim_id_t timer_id)
+{
+    TIM_t *tim = timers[timer_id];
+    switch (timer_id)
+    {
+    case TIM2:
+        return tim->CNT;
+        break;
+    default:
+        break;
+    }
 }
 
 uint32_t timer_elapsed_ms()
