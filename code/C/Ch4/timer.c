@@ -50,11 +50,11 @@ typedef struct
 #define TIM2_BASE ((TIM_t *) 0x40000000)
 #define TIM3_BASE ((TIM_t *) 0x40000400)
 #define TIM4_BASE ((TIM_t *) 0x40000800)
-#define TIM5_BASE ((TIM_t *) NULL)
+#define TIM5_BASE ((TIM_t *) 0x40000C00)
 #define TIM6_BASE ((TIM_t *) 0x40001000)
 #define TIM7_BASE ((TIM_t *) 0x40001400)
 
-TIM_t *timers[] = {(TIM_t*) SysTick, TIM1_BASE, TIM2_BASE, TIM3_BASE, TIM4_BASE};
+TIM_t *timers[] = {(TIM_t*) SysTick, TIM1_BASE, TIM2_BASE, TIM3_BASE, TIM4_BASE, NULL, TIM6_BASE, TIM7_BASE};
 
 void soft_delay_ms(uint32_t time_in_ms) {
     uint32_t count = time_in_ms * 1865; //Approx Factor
@@ -112,10 +112,22 @@ void timer_init(const tim_id_t timer){
         break;
     case TIM2:
         peripheral_tim2_enable();
+        break;
     case TIM3:
         peripheral_tim3_enable();
+        break;
     case TIM4:
         peripheral_tim4_enable();
+        break;
+    case TIM5:
+        peripheral_tim5_enable();
+        break;
+    case TIM6:
+        peripheral_tim6_enable();
+        break;
+    case TIM7:
+        peripheral_tim7_enable();
+        break;
     default:
         break;
     }
@@ -129,6 +141,9 @@ void timer_set_period(const tim_id_t timer_id, uint16_t prescaler, uint32_t peri
     case TIM2:
     case TIM3:
     case TIM4:
+    case TIM5:
+    case TIM6:
+    case TIM7:
         tim->PSC = prescaler - 1; //Set prescaler
         tim->ARR = period - 1; //Set period
         tim->CNT = 0;
@@ -136,6 +151,20 @@ void timer_set_period(const tim_id_t timer_id, uint16_t prescaler, uint32_t peri
     default:
         break;
     }
+}
+
+void timer_enable_interrupt(const tim_id_t timer_id)
+{
+    TIM_t *tim = timers[timer_id];
+    tim->DIER |= BIT(0); //enable interrupt
+    tim->EGR |= BIT(0); //reset timer
+    timer_clear_interruptflag(timer_id);
+}
+
+void timer_clear_interruptflag(const tim_id_t timer_id)
+{
+    TIM_t *tim = timers[timer_id];
+    tim->SR &= ~BIT(0);
 }
 
 void timer_start(const tim_id_t timer_id)
@@ -149,6 +178,9 @@ void timer_start(const tim_id_t timer_id)
     case TIM2:
     case TIM3:
     case TIM4:
+    case TIM5:
+    case TIM6:
+    case TIM7:
         tim->CR1 |= BIT(0);
     }
 }
@@ -170,8 +202,12 @@ uint32_t timer_getcount(const tim_id_t timer_id)
     switch (timer_id)
     {
     case TIM2:
+    case TIM3:
+    case TIM4:
+    case TIM5:
+    case TIM6:
+    case TIM7:
         return tim->CNT;
-        break;
     default:
         break;
     }

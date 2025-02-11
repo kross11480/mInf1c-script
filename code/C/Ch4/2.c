@@ -1,20 +1,46 @@
 //Task: Use Peripheral Timer (e.g. TIM0) to blink an LED
-//Note: use non-blocking polling only with flank detection not level
+//Note: use non-blocking polling only with flank detection not level, get count may be useless
+//Messy code to detect flank and avoid multiple toggles leading to heisenbug
+
 #include "timer.h"
 #include "gpio.h"
 #include "peripheral.h"
-
+#include "interrupts.h"
 
 uint32_t ticks = 0;
-uint32_t led_red = A0;
+uint32_t led_red = A1;
 
-void SysTick_Handler(void)
-{
-}
+#define TIMER_ID TIM6
+#define TIMER_ID_IT INTERRUPT_SOURCE_TIM6
 
 void TIM2_IRQHandler(void)
 {
+    gpio_toggle(led_red);
+    timer_clear_interruptflag(TIM2);
+}
 
+void TIM3_IRQHandler(void)
+{
+    gpio_toggle(led_red);
+    timer_clear_interruptflag(TIM3);
+}
+
+void TIM4_IRQHandler(void)
+{
+    gpio_toggle(led_red);
+    timer_clear_interruptflag(TIM4);
+}
+
+void TIM6_IRQHandler(void)
+{
+    gpio_toggle(led_red);
+    timer_clear_interruptflag(TIM6);
+}
+
+void TIM7_IRQHandler(void)
+{
+    gpio_toggle(led_red);
+    timer_clear_interruptflag(TIM7);
 }
 
 void led_init()
@@ -25,19 +51,18 @@ void led_init()
 }
 
 void main(void){
-    uint32_t t_now, t_prev=0;
+    NVIC_GlobalDisable();
+
     led_init();
-    timer_init(2);
-    timer_set_period(2, 16000, 250);
-    timer_start(2);
+    timer_init(TIMER_ID);
+    timer_set_period(TIMER_ID, 16000, 250);
+    timer_enable_interrupt(TIMER_ID);
+
+    NVIC_GlobalEnable();
+
+    timer_start(TIMER_ID);
+    NVIC_EnableIRQ(TIMER_ID_IT);
     while(1)
     {
-        t_now = timer_getcount(2);
-        //Messy code to detect flank and avoid multiple toggles leading to heisenbug
-        if( t_prev == 199 && t_now == 200)
-        {
-            gpio_toggle(led_red);
-        }
-        t_prev = t_now;
     }
 }

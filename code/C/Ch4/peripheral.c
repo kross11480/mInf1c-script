@@ -37,3 +37,18 @@ void peripheral_tim4_enable()
 {
     RCC->APB1ENR |= BIT(2);
 }
+
+void peripheral_tim5_enable()
+{
+    RCC->APB1ENR |= BIT(3);
+}
+
+void peripheral_tim6_enable()
+{
+    RCC->APB1ENR |= BIT(4);
+}
+
+void peripheral_tim7_enable()
+{
+    RCC->APB1ENR |= BIT(5);
+}

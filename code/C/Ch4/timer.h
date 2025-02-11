@@ -11,6 +11,9 @@ typedef enum _timer_ids tim_id_t;
 
 void timer_init(const tim_id_t);
 void timer_init(const tim_id_t);
+void timer_enable_interrupt(const tim_id_t);
+void timer_clear_interruptflag(const tim_id_t);
+
 //set prescaler and ARR according to period
 void timer_set_period(const tim_id_t timer, uint16_t prescaler, uint32_t period);
 void timer_set_mode(); //periodic, oc, ic, pwm
@@ -32,4 +35,7 @@ enum _timer_ids
     TIM2,
     TIM3,
     TIM4,
+    TIM5,
+    TIM6,
+    TIM7,
 };
