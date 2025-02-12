@@ -10,3 +10,7 @@ void peripheral_tim4_enable();
 void peripheral_tim5_enable();
 void peripheral_tim6_enable();
 void peripheral_tim7_enable();
+
+void peripheral_tim15_enable();
+void peripheral_tim16_enable();
+void peripheral_tim17_enable();

@@ -31,11 +31,14 @@ void soft_delay_ms(uint32_t time_in_ms);
 enum _timer_ids
 {
     SYSTICK = 0,
-    TIM1,
-    TIM2,
-    TIM3,
-    TIM4,
-    TIM5,
-    TIM6,
-    TIM7,
+    TIM1 = 1,
+    TIM2 = 2,
+    TIM3 = 3,
+    TIM4 = 4,
+    TIM5 = -1,
+    TIM6 = 6,
+    TIM7 = 7,
+    TIM15 = 15,
+    TIM16 = 16,
+    TIM17 = 17,
 };

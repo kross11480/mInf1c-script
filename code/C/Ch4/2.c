@@ -1,6 +1,7 @@
 //Task: Use Peripheral Timer (e.g. TIM0) to blink an LED
 //Note: use non-blocking polling only with flank detection not level, get count may be useless
 //Messy code to detect flank and avoid multiple toggles leading to heisenbug
+//Using update flag is cleaner
 
 #include "timer.h"
 #include "gpio.h"
@@ -8,10 +9,10 @@
 #include "interrupts.h"
 
 uint32_t ticks = 0;
-uint32_t led_red = A1;
+uint32_t led_red = A0;
 
-#define TIMER_ID TIM6
-#define TIMER_ID_IT INTERRUPT_SOURCE_TIM6
+#define TIMER_ID TIM17
+#define TIMER_ID_IT INTERRUPT_SOURCE_TIM17
 
 void TIM2_IRQHandler(void)
 {
@@ -41,6 +42,24 @@ void TIM7_IRQHandler(void)
 {
     gpio_toggle(led_red);
     timer_clear_interruptflag(TIM7);
+}
+
+void TIM15_IRQHandler(void)
+{
+    gpio_toggle(led_red);
+    timer_clear_interruptflag(TIM15);
+}
+
+void TIM16_IRQHandler(void)
+{
+    gpio_toggle(led_red);
+    timer_clear_interruptflag(TIM16);
+}
+
+void TIM17_IRQHandler(void)
+{
+    gpio_toggle(led_red);
+    timer_clear_interruptflag(TIM17);
 }
 
 void led_init()

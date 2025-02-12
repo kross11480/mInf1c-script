@@ -54,7 +54,12 @@ typedef struct
 #define TIM6_BASE ((TIM_t *) 0x40001000)
 #define TIM7_BASE ((TIM_t *) 0x40001400)
 
-TIM_t *timers[] = {(TIM_t*) SysTick, TIM1_BASE, TIM2_BASE, TIM3_BASE, TIM4_BASE, NULL, TIM6_BASE, TIM7_BASE};
+#define TIM15_BASE ((TIM_t *) 0x40014000)
+#define TIM16_BASE ((TIM_t *) 0x40014400)
+#define TIM17_BASE ((TIM_t *) 0x40014800)
+
+TIM_t *timers[] = {(TIM_t*) SysTick, TIM1_BASE, TIM2_BASE, TIM3_BASE, TIM4_BASE, NULL, TIM6_BASE, TIM7_BASE, NULL,
+    NULL, NULL, NULL, NULL, NULL, NULL, TIM15_BASE, TIM16_BASE, TIM17_BASE};
 
 void soft_delay_ms(uint32_t time_in_ms) {
     uint32_t count = time_in_ms * 1865; //Approx Factor
@@ -119,14 +124,20 @@ void timer_init(const tim_id_t timer){
     case TIM4:
         peripheral_tim4_enable();
         break;
-    case TIM5:
-        peripheral_tim5_enable();
-        break;
     case TIM6:
         peripheral_tim6_enable();
         break;
     case TIM7:
         peripheral_tim7_enable();
+        break;
+    case TIM15:
+        peripheral_tim15_enable();
+        break;
+    case TIM16:
+        peripheral_tim16_enable();
+        break;
+    case TIM17:
+        peripheral_tim17_enable();
         break;
     default:
         break;
@@ -141,9 +152,11 @@ void timer_set_period(const tim_id_t timer_id, uint16_t prescaler, uint32_t peri
     case TIM2:
     case TIM3:
     case TIM4:
-    case TIM5:
     case TIM6:
     case TIM7:
+    case TIM15:
+    case TIM16:
+    case TIM17:
         tim->PSC = prescaler - 1; //Set prescaler
         tim->ARR = period - 1; //Set period
         tim->CNT = 0;
@@ -181,7 +194,11 @@ void timer_start(const tim_id_t timer_id)
     case TIM5:
     case TIM6:
     case TIM7:
+    case TIM15:
+    case TIM16:
+    case TIM17:
         tim->CR1 |= BIT(0);
+        break;
     }
 }
 
@@ -207,6 +224,9 @@ uint32_t timer_getcount(const tim_id_t timer_id)
     case TIM5:
     case TIM6:
     case TIM7:
+    case TIM15:
+    case TIM16:
+    case TIM17:
         return tim->CNT;
     default:
         break;
