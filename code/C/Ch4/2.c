@@ -9,16 +9,11 @@
 #include "interrupts.h"
 
 uint32_t ticks = 0;
-uint32_t led_red = A0;
+uint32_t led_red = A2;
 
-#define TIMER_ID TIM17
-#define TIMER_ID_IT INTERRUPT_SOURCE_TIM17
+#define TIMER_ID TIM8
+#define TIMER_ID_IT INTERRUPT_SOURCE_TIM8
 
-void TIM2_IRQHandler(void)
-{
-    gpio_toggle(led_red);
-    timer_clear_interruptflag(TIM2);
-}
 
 void TIM3_IRQHandler(void)
 {
@@ -44,6 +39,12 @@ void TIM7_IRQHandler(void)
     timer_clear_interruptflag(TIM7);
 }
 
+void TIM8_IRQHandler(void)
+{
+    gpio_toggle(led_red);
+    timer_clear_interruptflag(TIM8);
+}
+
 void TIM15_IRQHandler(void)
 {
     gpio_toggle(led_red);
@@ -53,6 +54,7 @@ void TIM15_IRQHandler(void)
 void TIM16_IRQHandler(void)
 {
     gpio_toggle(led_red);
+    timer_clear_interruptflag(TIM1);
     timer_clear_interruptflag(TIM16);
 }
 

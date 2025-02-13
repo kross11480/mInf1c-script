@@ -38,6 +38,7 @@ enum _timer_ids
     TIM5 = -1,
     TIM6 = 6,
     TIM7 = 7,
+    TIM8 = 8,
     TIM15 = 15,
     TIM16 = 16,
     TIM17 = 17,

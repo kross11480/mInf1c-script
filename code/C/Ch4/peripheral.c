@@ -23,6 +23,12 @@ void peripheral_gpioB_enable()
     RCC->AHB2ENR |= BIT(1);
 }
 
+// Timer Enable
+void peripheral_tim1_enable()
+{
+    RCC->APB2ENR |= BIT(11);
+}
+
 void peripheral_tim2_enable()
 {
     RCC->APB1ENR |= BIT(0);
@@ -51,6 +57,11 @@ void peripheral_tim6_enable()
 void peripheral_tim7_enable()
 {
     RCC->APB1ENR |= BIT(5);
+}
+
+void peripheral_tim8_enable()
+{
+    RCC->APB2ENR |= BIT(13);
 }
 
 void peripheral_tim15_enable()

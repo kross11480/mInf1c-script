@@ -46,20 +46,22 @@ typedef struct
 } TIM_t;
 
 
-#define TIM1_BASE ((TIM_t *) NULL)
+#define TIM1_BASE ((TIM_t *) 0x40012C00)
 #define TIM2_BASE ((TIM_t *) 0x40000000)
 #define TIM3_BASE ((TIM_t *) 0x40000400)
 #define TIM4_BASE ((TIM_t *) 0x40000800)
 #define TIM5_BASE ((TIM_t *) 0x40000C00)
 #define TIM6_BASE ((TIM_t *) 0x40001000)
 #define TIM7_BASE ((TIM_t *) 0x40001400)
+#define TIM8_BASE ((TIM_t *) 0x40013400)
 
 #define TIM15_BASE ((TIM_t *) 0x40014000)
 #define TIM16_BASE ((TIM_t *) 0x40014400)
 #define TIM17_BASE ((TIM_t *) 0x40014800)
 
-TIM_t *timers[] = {(TIM_t*) SysTick, TIM1_BASE, TIM2_BASE, TIM3_BASE, TIM4_BASE, NULL, TIM6_BASE, TIM7_BASE, NULL,
-    NULL, NULL, NULL, NULL, NULL, NULL, TIM15_BASE, TIM16_BASE, TIM17_BASE};
+
+TIM_t *timers[] = {(TIM_t*) SysTick, TIM1_BASE, TIM2_BASE, TIM3_BASE, TIM4_BASE, NULL, TIM6_BASE, TIM7_BASE, TIM8_BASE,
+    NULL, NULL, NULL, NULL, NULL, NULL, TIM15_BASE, TIM16_BASE, TIM17_BASE, NULL, NULL, NULL};
 
 void soft_delay_ms(uint32_t time_in_ms) {
     uint32_t count = time_in_ms * 1865; //Approx Factor
@@ -115,6 +117,9 @@ void timer_init(const tim_id_t timer){
     case SYSTICK:
         _systick_init(); //Intialize Systick Clock for 16 tick per us
         break;
+    case TIM1:
+        peripheral_tim1_enable();
+        break;
     case TIM2:
         peripheral_tim2_enable();
         break;
@@ -129,6 +134,9 @@ void timer_init(const tim_id_t timer){
         break;
     case TIM7:
         peripheral_tim7_enable();
+        break;
+    case TIM8:
+        peripheral_tim8_enable();
         break;
     case TIM15:
         peripheral_tim15_enable();
@@ -149,11 +157,13 @@ void timer_set_period(const tim_id_t timer_id, uint16_t prescaler, uint32_t peri
     TIM_t *tim = timers[timer_id];
     switch(timer_id)
     {
+    case TIM1:
     case TIM2:
     case TIM3:
     case TIM4:
     case TIM6:
     case TIM7:
+    case TIM8:
     case TIM15:
     case TIM16:
     case TIM17:
@@ -188,12 +198,14 @@ void timer_start(const tim_id_t timer_id)
     case SYSTICK:
         _systick_start();
         break;
+    case TIM1:
     case TIM2:
     case TIM3:
     case TIM4:
     case TIM5:
     case TIM6:
     case TIM7:
+    case TIM8:
     case TIM15:
     case TIM16:
     case TIM17:
@@ -218,12 +230,14 @@ uint32_t timer_getcount(const tim_id_t timer_id)
     TIM_t *tim = timers[timer_id];
     switch (timer_id)
     {
+    case TIM1:
     case TIM2:
     case TIM3:
     case TIM4:
     case TIM5:
     case TIM6:
     case TIM7:
+    case TIM8:
     case TIM15:
     case TIM16:
     case TIM17:
@@ -231,6 +245,7 @@ uint32_t timer_getcount(const tim_id_t timer_id)
     default:
         break;
     }
+    return 0;
 }
 
 uint32_t timer_elapsed_ms()
@@ -249,4 +264,10 @@ void timer_delay_s(uint32_t time_in_s)
     {
         while(!(SysTick->CTRL & (1<<16)));
     }
+}
+
+void TIM2_IRQHandler(void)
+{
+    //callback: gpio_toggle(led_red);
+    timer_clear_interruptflag(TIM2);
 }
