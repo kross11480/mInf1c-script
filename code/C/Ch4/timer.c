@@ -2,6 +2,9 @@
 #include "timer.h"
 #include "peripheral.h"
 #include "util.h"
+#include "interrupts.h"
+
+//Add __weak if irq handler defined in example or main
 
 typedef struct {
     uint32_t CTRL;
@@ -266,8 +269,62 @@ void timer_delay_s(uint32_t time_in_s)
     }
 }
 
+void timer_interrupt_register_handler(const nvic_source_t tim_irq_num, callbackfn_typeDef fn)
+{
+    interrupts_register_handler(tim_irq_num, fn);
+}
+
 void TIM2_IRQHandler(void)
 {
-    //callback: gpio_toggle(led_red);
+    generic_dispatch();
     timer_clear_interruptflag(TIM2);
+}
+
+void TIM3_IRQHandler(void)
+{
+    generic_dispatch();
+    timer_clear_interruptflag(TIM3);
+}
+
+void TIM4_IRQHandler(void)
+{
+    generic_dispatch();
+    timer_clear_interruptflag(TIM4);
+}
+
+void TIM6_IRQHandler(void)
+{
+    generic_dispatch();
+    timer_clear_interruptflag(TIM6);
+}
+
+void TIM7_IRQHandler(void)
+{
+    generic_dispatch();
+    timer_clear_interruptflag(TIM7);
+}
+
+void TIM8_IRQHandler(void)
+{
+    generic_dispatch();
+    timer_clear_interruptflag(TIM8);
+}
+
+void TIM15_IRQHandler(void)
+{
+    generic_dispatch();
+    timer_clear_interruptflag(TIM15);
+}
+
+void TIM16_IRQHandler(void)
+{
+    generic_dispatch();
+    timer_clear_interruptflag(TIM1);
+    timer_clear_interruptflag(TIM16);
+}
+
+void TIM17_IRQHandler(void)
+{
+    generic_dispatch();
+    timer_clear_interruptflag(TIM17);
 }

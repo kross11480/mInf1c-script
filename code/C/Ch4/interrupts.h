@@ -1,27 +1,18 @@
 
 #ifndef INTERRUPTS_H
 #define INTERRUPTS_H
+#include "nvic.h"
 
+//Datatypes
+typedef void (*callbackfn_typeDef)();
 
-#include <stdint.h>
+//Functions
+void interrupts_init(void);
+void interrupts_global_enable(void);
+void interrupts_global_disable(void);
 
-#define NVIC_GlobalEnable() do { __asm volatile("cpsie i"); } while (0)
-#define NVIC_GlobalDisable() do { __asm volatile("cpsid i"); } while(0)
-
-typedef enum _interrupt_sources interrupt_source_t;
-
-void NVIC_EnableIRQ(interrupt_source_t);       // enable interrupt in NVIC
-
-enum _interrupt_sources {
-    INTERRUPT_SOURCE_TIM2 = 28,
-    INTERRUPT_SOURCE_TIM3 = 29,
-    INTERRUPT_SOURCE_TIM4 = 30,
-    INTERRUPT_SOURCE_TIM6 = 54,
-    INTERRUPT_SOURCE_TIM7 = 55,
-    INTERRUPT_SOURCE_TIM8 = 44,
-    INTERRUPT_SOURCE_TIM15 = 24,
-    INTERRUPT_SOURCE_TIM1_TIM16 = 25,
-    INTERRUPT_SOURCE_TIM17 = 26,
-};
-
+void interrupts_enable_source(nvic_source_t source);
+void interrupts_disable_source(nvic_source_t source);
+void interrupts_register_handler(nvic_source_t source, callbackfn_typeDef fn);
+void generic_dispatch();
 #endif

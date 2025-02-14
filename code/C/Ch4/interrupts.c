@@ -1,24 +1,62 @@
 #include <stdint.h>
+#include <stddef.h>
+#include <stdbool.h>
 #include "interrupts.h"
-#include "util.h"
-/** NVIC register map type. */
-typedef struct {
-    uint32_t ISER[8];      /**< Interrupt Set Enable Registers */
-    uint32_t RESERVED0[24];
-    uint32_t ICER[8];      /**< Interrupt Clear Enable Registers */
-    uint32_t RESERVED1[24];
-    uint32_t ISPR[8];      /**< Interrupt Set Pending Registers */
-    uint32_t RESERVED2[24];
-    uint32_t ICPR[8];      /**< Interrupt Clear Pending Registers */
-    uint32_t RESERVED3[24];
-    uint32_t IABR[8];      /**< Interrupt Active bit Registers */
-    uint32_t RESERVED5[644];
-    uint32_t STIR;         /**< Software Trigger Interrupt Registers */
-} NVIC_typeDef;
 
-#define NVIC_BASE ((NVIC_typeDef *) 0xE000E100)
+#define NUM_INTERRUPTS 240
 
-void NVIC_EnableIRQ(interrupt_source_t irq_num){
-    NVIC_BASE->ISER[irq_num/32] |= BIT(irq_num%32);
+static struct {
+   struct {
+        callbackfn_typeDef callback;
+        void *aux_data; //use in case of gpio, timer modes like interrupt in advanced modes later
+    } handlers[NUM_INTERRUPTS];
+    bool initialized;
+} module;
+
+static inline uint8_t get_irq_num(void)
+{
+    uint8_t irq;
+    __asm volatile ("mrs %0, ipsr" : "=r" (irq));
+    return irq - 16;
 }
-//NVIC_EnableIRQ(TIM1_BRK_TIM15_IRQn);       // enable interrupt in NVIC
+
+void generic_dispatch()
+{
+    uint8_t irq_num = get_irq_num();
+    module.handlers[irq_num].callback();
+}
+
+//Usage: interrupts_register_handler(TIMx_IRQn, tim_irq_handler);
+void interrupts_register_handler(nvic_source_t source, callbackfn_typeDef fn)
+{
+    module.handlers[source].callback = fn;
+}
+
+void interrupts_init(void)
+{
+    for(uint8_t i = 0; i < NUM_INTERRUPTS; i++)
+    {
+        module.handlers[i].callback = NULL;
+    }
+    module.initialized = true;
+}
+void interrupts_global_enable(void)
+{
+    NVIC_GlobalEnable();
+}
+void interrupts_global_disable(void)
+{
+    NVIC_GlobalDisable();
+}
+
+void interrupts_enable_source(nvic_source_t source)
+{
+    NVIC_EnableIRQ(source);
+}
+
+void interrupts_disable_source(nvic_source_t source)
+{
+    //
+}
+
+
