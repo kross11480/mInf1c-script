@@ -23,6 +23,9 @@ void peripheral_gpioB_enable()
     RCC->AHB2ENR |= BIT(1);
 }
 
+void peripheral_exti_enable() {
+    RCC->APB2ENR |= BIT(0);
+}
 // Timer Enable
 void peripheral_tim1_enable()
 {

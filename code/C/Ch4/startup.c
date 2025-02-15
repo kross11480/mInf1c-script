@@ -7,13 +7,15 @@ extern unsigned int _sbss; // start .bss (allocated in RAM)
 extern unsigned int _ebss; // end .bss
 
 extern void SysTick_Handler(void);
+
+extern void EXTI0_IRQHandler(void);
+
 extern void TIM2_IRQHandler(void);
 extern void TIM3_IRQHandler(void);
 extern void TIM4_IRQHandler(void);
 extern void TIM6_IRQHandler(void);
 extern void TIM7_IRQHandler(void);
 extern void TIM8_IRQHandler(void);
-
 extern void TIM15_IRQHandler(void);
 extern void TIM16_IRQHandler(void);
 extern void TIM17_IRQHandler(void);
@@ -65,7 +67,7 @@ void (* const paIsrFunc[16+102])(void) =
 	0,            /*   3 (0x0000004C)  RTC Wakeup timer through EXTI line 20 interrupt */
 	0,            /*   4 (0x00000050)  Flash global interrupt */
 	0,            /*   5 (0x00000054)  RCC global interrupt */
-	0,       /*   6 (0x00000058)  EXTI Line 0 interrupt */
+	EXTI0_IRQHandler,       /*   6 (0x00000058)  EXTI Line 0 interrupt */
 	0,            /*   7 (0x0000005C)  EXTI Line 1 interrupt */
 	0,            /*   8 (0x00000060)  EXTI Line 2 interrupt */
 	0,            /*   9 (0x00000064)  EXTI Line 3 interrupt */

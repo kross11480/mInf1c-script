@@ -4,6 +4,8 @@
 void peripheral_gpioA_enable();
 void peripheral_gpioB_enable();
 
+void peripheral_exti_enable();
+
 void peripheral_tim1_enable();
 void peripheral_tim2_enable();
 void peripheral_tim3_enable();
