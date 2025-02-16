@@ -1,6 +1,9 @@
 #include "gpio.h"
 #include <stdint.h>
 
+#include "peripheral.h"
+#include "util.h"
+
 typedef struct {
     volatile uint32_t MODER;    // 0x00: mode register
     volatile uint32_t OTYPER;   // 0x04: GPIO output type register
@@ -16,6 +19,39 @@ typedef struct {
 #define GPIO_BASE (0x48000000)
 #define GPIO_PORTOFFSET (0x400)
 #define GPIOB ((GPIO_typeDef *) 0x48000400)
+
+typedef struct
+{
+    volatile uint32_t IMR1;        /*!< EXTI Interrupt mask register 1,             Address offset: 0x00 */
+    volatile uint32_t EMR1;        /*!< EXTI Event mask register 1,                 Address offset: 0x04 */
+    volatile uint32_t RTSR1;       /*!< EXTI Rising trigger selection register 1,   Address offset: 0x08 */
+    volatile uint32_t FTSR1;       /*!< EXTI Falling trigger selection register 1,  Address offset: 0x0C */
+    volatile uint32_t SWIER1;      /*!< EXTI Software interrupt event register 1,   Address offset: 0x10 */
+    volatile uint32_t PR1;         /*!< EXTI Pending register 1,                    Address offset: 0x14 */
+    uint32_t      RESERVED1;   /*!< Reserved, 0x18                                                   */
+    uint32_t      RESERVED2;   /*!< Reserved, 0x1C                                                   */
+    volatile uint32_t IMR2;        /*!< EXTI Interrupt mask register 2,             Address offset: 0x20 */
+    volatile uint32_t EMR2;        /*!< EXTI Event mask register 2,                 Address offset: 0x24 */
+    volatile uint32_t RTSR2;       /*!< EXTI Rising trigger selection register 2,   Address offset: 0x28 */
+    volatile uint32_t FTSR2;       /*!< EXTI Falling trigger selection register 2,  Address offset: 0x2C */
+    volatile uint32_t SWIER2;      /*!< EXTI Software interrupt event register 2,   Address offset: 0x30 */
+    volatile uint32_t PR2;         /*!< EXTI Pending register 2,                    Address offset: 0x34 */
+} EXTI_typeDef;
+
+#define EXTI ((EXTI_typeDef *) 0x40010400)
+
+typedef struct
+{
+    volatile uint32_t MEMRMP;      /*!< SYSCFG memory remap register,                        Address offset: 0x00      */
+    volatile uint32_t CFGR1;       /*!< SYSCFG configuration register 1,                     Address offset: 0x04      */
+    volatile uint32_t EXTICR[4];   /*!< SYSCFG external interrupt configuration registers,   Address offset: 0x08-0x14 */
+    volatile uint32_t SCSR;        /*!< SYSCFG CCMSRAM control and status register,          Address offset: 0x18      */
+    volatile uint32_t CFGR2;       /*!< SYSCFG configuration register 2,                     Address offset: 0x1C      */
+    volatile uint32_t SWPR;        /*!< SYSCFG CCMSRAM write protection register,            Address offset: 0x20      */
+    volatile uint32_t SKR;         /*!< SYSCFG CCMSRAM Key Register,                         Address offset: 0x24      */
+} SYSCFG_typeDef;
+
+#define SYSCFG ((SYSCFG_typeDef *) 0x40010000)
 
 static inline GPIO_typeDef * gpio_get_base_address(const gpio_id_t portpin)
 {
@@ -78,5 +114,55 @@ void gpio_set_alternate_function(const gpio_id_t portpin, afr_t af)
     else
     {
         gpio->AFR[1] |= (af << (4*(pin-8)));
+    }
+}
+
+void gpio_enable_interrupt(const gpio_id_t portpin, const event_t evt) {
+    uint16_t pin = portpin & 0xFF;
+    uint16_t port = (portpin >> 8);
+    uint16_t shift = (pin%4)*4;
+    peripheral_exti_enable();
+
+    // Initialize EXTI0 for interrupt on PB0(EXTIx = PINx)
+    SYSCFG->EXTICR[pin/4] &= ~(0xF << shift); // Clear settings
+    SYSCFG->EXTICR[pin/4] |= (port << shift);
+
+    EXTI->IMR1 |= BIT(pin); 		// Enable interrupt 0 (IM).
+    EXTI->FTSR1 |= BIT(pin); 	    // Trigger EXTI on falling edge
+}
+
+void gpio_clear_interruptflag(const gpio_id_t portpin) {
+
+}
+
+void gpio_interrupt_register_handler(const nvic_source_t, callbackfn_typeDef) {
+
+}
+
+void EXTI0_IRQHandler(void)
+{
+    if (EXTI->PR1 & (1 << 0))  // Check if EXTI0 triggered
+    {
+        EXTI->PR1 |= (1 << 0);  // Clear pending bit
+        gpio_toggle(A0);
+    }
+}
+
+void EXTI4_IRQHandler(void)
+{
+    if (EXTI->PR1 & (1 << 4))  // Check if EXTI0 triggered
+    {
+        EXTI->PR1 |= (1 << 4);  // Clear pending bit
+        gpio_toggle(A0);
+    }
+}
+
+void EXTI5_9_IRQHandler(void) {
+    for (uint8_t i = 5; i <=9; i++) {
+        if (EXTI->PR1 & (1 << i))  // Check if EXTI0 triggered
+        {
+            EXTI->PR1 |= (1 << i);  // Clear pending bit
+            gpio_toggle(A0);
+        }
     }
 }

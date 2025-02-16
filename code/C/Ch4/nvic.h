@@ -1,5 +1,8 @@
 //NVIC: Check Pending Register
 //Functions
+#ifndef NVIC_H
+#define NVIC_H
+
 #define NVIC_GlobalEnable() do { __asm volatile("cpsie i"); } while (0)
 #define NVIC_GlobalDisable() do { __asm volatile("cpsid i"); } while(0)
 
@@ -8,6 +11,10 @@ void NVIC_EnableIRQ(nvic_source_t irq);       // enable interrupt in NVIC
 
 //Datatypes
 enum _nvic_interrupt_sources {
+    INTERRUPT_SOURCE_EXTI0 = 6,
+    INTERRUPT_SOURCE_EXTI4 = 10,
+    INTERRUPT_SOURCE_EXTI5_9 = 23,
+
     INTERRUPT_SOURCE_TIM2 = 28,
     INTERRUPT_SOURCE_TIM3 = 29,
     INTERRUPT_SOURCE_TIM4 = 30,
@@ -18,3 +25,5 @@ enum _nvic_interrupt_sources {
     INTERRUPT_SOURCE_TIM1_TIM16 = 25,
     INTERRUPT_SOURCE_TIM17 = 26,
 };
+
+#endif

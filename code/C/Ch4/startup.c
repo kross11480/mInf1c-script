@@ -9,6 +9,8 @@ extern unsigned int _ebss; // end .bss
 extern void SysTick_Handler(void);
 
 extern void EXTI0_IRQHandler(void);
+extern void EXTI4_IRQHandler(void);
+extern void EXTI5_9_IRQHandler(void);
 
 extern void TIM2_IRQHandler(void);
 extern void TIM3_IRQHandler(void);
@@ -71,7 +73,7 @@ void (* const paIsrFunc[16+102])(void) =
 	0,            /*   7 (0x0000005C)  EXTI Line 1 interrupt */
 	0,            /*   8 (0x00000060)  EXTI Line 2 interrupt */
 	0,            /*   9 (0x00000064)  EXTI Line 3 interrupt */
-	0,            /*  10 (0x00000068)  EXTI Line 4 interrupt */
+	EXTI4_IRQHandler,            /*  10 (0x00000068)  EXTI Line 4 interrupt */
 	0,            /*  11 (0x0000006C)  DMA1 channel 1 interrupt */
 	0,            /*  12 (0x00000070)  DMA1 channel 2 interrupt */
 	0,            /*  13 (0x00000074)  DMA1 channel 3 interrupt */
@@ -84,7 +86,7 @@ void (* const paIsrFunc[16+102])(void) =
 	0,            /*  20 (0x00000090)  USB low priority interrupts */
 	0,            /*  21 (0x00000094)  FDCAN1 interrupt 0 */
 	0,            /*  22 (0x00000098)  FDCAN1 interrupt 1 */
-	0,            /*  23 (0x0000009C)  EXTI line [9:5] interrupts */
+	EXTI5_9_IRQHandler,            /*  23 (0x0000009C)  EXTI line [9:5] interrupts */
 	TIM15_IRQHandler,            /*  24 (0x000000A0)  TIM1 break + TIM15 global interrupts */
 	TIM16_IRQHandler,            /*  25 (0x000000A4)  TIM1 update + TIM16 global interrupts */
 	TIM17_IRQHandler,            /*  26 (0x000000A8)  TIM1 trigger, commutation, direction change, index  + TIM17 interrupts */
