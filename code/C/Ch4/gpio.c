@@ -131,30 +131,24 @@ void gpio_enable_interrupt(const gpio_id_t portpin, const event_t evt) {
     EXTI->FTSR1 |= BIT(pin); 	    // Trigger EXTI on falling edge
 }
 
-void gpio_clear_interruptflag(const gpio_id_t portpin) {
-
+void gpio_clear_interruptflag(const exti_id_t pin) {
+    EXTI->PR1 |= BIT(pin);  // Clear pending bit
 }
 
-void gpio_interrupt_register_handler(const nvic_source_t, callbackfn_typeDef) {
-
+void gpio_interrupt_register_handler(const nvic_source_t exti_irq_num, callbackfn_typeDef fn) {
+    interrupts_register_handler(exti_irq_num, fn);
 }
 
 void EXTI0_IRQHandler(void)
 {
-    if (EXTI->PR1 & (1 << 0))  // Check if EXTI0 triggered
-    {
-        EXTI->PR1 |= (1 << 0);  // Clear pending bit
-        gpio_toggle(A0);
-    }
+    generic_dispatch();
+    gpio_clear_interruptflag(EXTI0);
 }
 
 void EXTI4_IRQHandler(void)
 {
-    if (EXTI->PR1 & (1 << 4))  // Check if EXTI0 triggered
-    {
-        EXTI->PR1 |= (1 << 4);  // Clear pending bit
-        gpio_toggle(A0);
-    }
+    generic_dispatch();
+    gpio_clear_interruptflag(EXTI4);
 }
 
 void EXTI5_9_IRQHandler(void) {

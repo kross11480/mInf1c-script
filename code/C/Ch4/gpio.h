@@ -7,6 +7,7 @@
 /* GPIO (General Purpose Input and Output) Hardware Abstraction layer */
 /**********************************************************************/
 typedef enum _stefilite_ids gpio_id_t;
+typedef enum _stefi_exti_ids exti_id_t;
 
 typedef enum {LOW, HIGH} sig_t;
 typedef enum {MODER_INPUT, MODER_OUTPUT, MODER_AF, MODER_ANALOG} moder_t;
@@ -22,7 +23,7 @@ void gpio_toggle(const gpio_id_t portpin);
 void gpio_set_alternate_function(const gpio_id_t portpin, afr_t af);
 
 void gpio_enable_interrupt(const gpio_id_t, const event_t);
-void gpio_clear_interruptflag(const gpio_id_t);
+void gpio_clear_interruptflag(const exti_id_t);
 void gpio_interrupt_register_handler(const nvic_source_t, callbackfn_typeDef);
 
 enum _stefilite_ids
@@ -59,6 +60,12 @@ enum _stefilite_ids
     B13,
     B14,
     B15,
+};
+
+enum _stefi_exti_ids
+{
+    EXTI0 = 0,
+    EXTI4 = 4,
 };
 #endif
 
