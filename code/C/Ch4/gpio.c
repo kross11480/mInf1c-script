@@ -53,6 +53,11 @@ typedef struct
 
 #define SYSCFG ((SYSCFG_typeDef *) 0x40010000)
 
+static struct {
+    callbackfn_typeDef callback;
+} exti_handlers[NUM_EXTIINTERRUPTS];
+
+
 static inline GPIO_typeDef * gpio_get_base_address(const gpio_id_t portpin)
 {
     uint16_t port = (portpin >> 8);
@@ -129,34 +134,43 @@ void gpio_enable_interrupt(const gpio_id_t portpin, const event_t evt) {
 
     EXTI->IMR1 |= BIT(pin); 		// Enable interrupt 0 (IM).
     EXTI->FTSR1 |= BIT(pin); 	    // Trigger EXTI on falling edge
+
+    //initialize exti handler to NULL
+    for(uint8_t i = 0; i < NUM_EXTIINTERRUPTS; i++) {
+        exti_handlers[i].callback = NULL;
+    }
 }
 
 void gpio_clear_interruptflag(const exti_id_t pin) {
     EXTI->PR1 |= BIT(pin);  // Clear pending bit
 }
 
-void gpio_interrupt_register_handler(const nvic_source_t exti_irq_num, callbackfn_typeDef fn) {
-    interrupts_register_handler(exti_irq_num, fn);
+void gpio_interrupt_register_handler(const exti_id_t exti_id, callbackfn_typeDef fn) {
+    exti_handlers[exti_id].callback =fn;
+}
+
+void exti_dispatch(uint8_t exti_num)
+{
+    exti_handlers[exti_num].callback();
 }
 
 void EXTI0_IRQHandler(void)
 {
-    generic_dispatch();
+    exti_dispatch(0);
     gpio_clear_interruptflag(EXTI0);
 }
 
 void EXTI4_IRQHandler(void)
 {
-    generic_dispatch();
+    exti_dispatch(4);
     gpio_clear_interruptflag(EXTI4);
 }
 
 void EXTI5_9_IRQHandler(void) {
-    for (uint8_t i = 5; i <=9; i++) {
-        if (EXTI->PR1 & (1 << i))  // Check if EXTI0 triggered
-        {
-            EXTI->PR1 |= (1 << i);  // Clear pending bit
-            gpio_toggle(A0);
+    for(uint8_t i = 5; i <= 9; i++) {
+        if(EXTI->PR1 & BIT(i)) {
+            exti_dispatch(i);
+            gpio_clear_interruptflag(i);
         }
     }
 }
