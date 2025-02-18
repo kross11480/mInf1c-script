@@ -6,11 +6,11 @@ Concepts: Interrupts and Timers
 5. Debouncing Button with Interrupts, Mode: One Pulse 
 6. Example: Reaction Game
 7. PWM using Timers: Fading Lights 
-8. Interrupts (Deep Dive): Stack, Floating point 
-9. Timer Mode: Input Capture 
+8. Timer Mode: Input Capture 
 
 Concepts: Data
 1. DMA
+2. Interrupts (Deep Dive): Stack, Floating point
 2. I2C Bit-banging 
 3. I2C Read/Write Function 
 4. Project: Temperature sensor

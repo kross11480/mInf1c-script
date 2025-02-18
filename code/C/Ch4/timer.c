@@ -66,12 +66,6 @@ typedef struct
 TIM_t *timers[] = {(TIM_t*) SysTick, TIM1_BASE, TIM2_BASE, TIM3_BASE, TIM4_BASE, NULL, TIM6_BASE, TIM7_BASE, TIM8_BASE,
     NULL, NULL, NULL, NULL, NULL, NULL, TIM15_BASE, TIM16_BASE, TIM17_BASE, NULL, NULL, NULL};
 
-void soft_delay_ms(uint32_t time_in_ms) {
-    uint32_t count = time_in_ms * 1865; //Approx Factor
-    while (count--)
-        __asm__("NOP"); //6-8 Cycles per loop => @16 Mhz
-}
-
 void _systick_init()
 {
     SysTick->CTRL |= (1 << 2); //1: Clock 0: Clock/8.
@@ -274,6 +268,7 @@ void timer_interrupt_register_handler(const nvic_source_t tim_irq_num, callbackf
     interrupts_register_handler(tim_irq_num, fn);
 }
 
+/*********IRQ HANDLERS ***************/
 void TIM2_IRQHandler(void)
 {
     generic_dispatch();

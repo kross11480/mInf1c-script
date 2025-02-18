@@ -11,6 +11,7 @@ void button_callback()
 }
 
 void main() {
+    const int buttons[3] = {[0] = 1, [1] = 2, [2] = 3};
     peripheral_gpioA_enable();
     peripheral_gpioB_enable();
 

@@ -28,7 +28,6 @@ uint32_t timer_getcount(const tim_id_t);
 uint32_t timer_elapsed_ms();
 void timer_delay_ms(uint32_t time_in_ms);
 void timer_delay_s(uint32_t time_in_s);
-void soft_delay_ms(uint32_t time_in_ms);
 
 enum _timer_ids
 {
