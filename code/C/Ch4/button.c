@@ -5,6 +5,7 @@
 #include "peripheral.h"
 #include "board.h"
 
+stefi_buttons_config_t it;
 
 void button_init(stefi_button_t id) {
     peripheral_gpioB_enable();
@@ -24,9 +25,15 @@ nvic_source_t get_exti_irq(stefi_button_t id) {
 }
 
 void button_interrupt_init(stefi_button_t id, callbackfn_typeDef fn) {
-    buttons[id].it.irq = get_exti_irq(id);
-    buttons[id].it.callback_fn = fn;
+    it.irq = get_exti_irq(id);
+    it.callback_fn = fn;
     gpio_enable_interrupt(buttons[id].portpin, FALLING_EDGE);
     gpio_interrupt_register_handler(buttons[id].portpin, fn);
-    interrupts_enable_source(buttons[id].it.irq);
+    interrupts_enable_source(it.irq);
+}
+
+bool button_is_pressed(stefi_button_t id) {
+    //currently only for pull down
+    sig_t button_state = gpio_read(buttons[id].portpin);
+    return button_state ? false : true;
 }

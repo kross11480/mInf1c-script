@@ -213,10 +213,25 @@ void timer_start(const tim_id_t timer_id)
 
 void timer_stop(const tim_id_t timer_id)
 {
+    TIM_t *tim = timers[timer_id];
     switch (timer_id)
     {
     case SYSTICK:
         _systick_stop();
+        break;
+        case TIM1:
+        case TIM2:
+        case TIM3:
+        case TIM4:
+        case TIM5:
+        case TIM6:
+        case TIM7:
+        case TIM8:
+        case TIM15:
+        case TIM16:
+        case TIM17:
+            tim->CR1 &= ~BIT(0);
+            tim->CNT = 0;
         break;
     }
 
@@ -266,6 +281,13 @@ void timer_delay_s(uint32_t time_in_s)
 void timer_interrupt_register_handler(const nvic_source_t tim_irq_num, callbackfn_typeDef fn)
 {
     interrupts_register_handler(tim_irq_num, fn);
+}
+
+void timer_init_periodic(tim_id_t tim, nvic_source_t tim_irq_num,  callbackfn_typeDef fn, uint16_t prescaler, uint32_t period)
+{
+    timer_init(tim);
+    timer_set_period(tim, prescaler, period);
+    timer_interrupt_register_handler(tim_irq_num, fn);
 }
 
 /*********IRQ HANDLERS ***************/
