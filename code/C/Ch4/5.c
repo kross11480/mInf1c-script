@@ -4,8 +4,6 @@
 //      * initially soft blocking delay and no timer, later with timer
 //      * Implementation in button.c (start debouncing timer in exti handler.)
 #include <stdbool.h>
-#include <stdint.h>
-#include "util.h"
 #include "gpio.h"
 #include "peripheral.h"
 #include "button.h"
