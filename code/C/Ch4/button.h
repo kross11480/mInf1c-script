@@ -6,8 +6,6 @@
 #include "gpio.h"
 #include "interrupts.h"
 
-#define NUM_BUTTONS 4
-
 typedef enum {
     BUTTON_S0,
     BUTTON_S1,

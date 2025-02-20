@@ -211,7 +211,7 @@ void timer_start(const tim_id_t timer_id)
     }
 }
 
-void timer_stop(const tim_id_t timer_id)
+void timer_reset(const tim_id_t timer_id)
 {
     TIM_t *tim = timers[timer_id];
     switch (timer_id)
@@ -288,6 +288,13 @@ void timer_init_periodic(tim_id_t tim, nvic_source_t tim_irq_num,  callbackfn_ty
     timer_init(tim);
     timer_set_period(tim, prescaler, period);
     timer_interrupt_register_handler(tim_irq_num, fn);
+    timer_enable_interrupt(tim);
+    interrupts_enable_source(tim_irq_num);
+}
+
+void timer_change_period(tim_id_t timer_id, uint32_t period) {
+    TIM_t *tim = timers[timer_id];
+    tim->ARR = period - 1; //Set period
 }
 
 /*********IRQ HANDLERS ***************/
