@@ -134,11 +134,6 @@ void gpio_enable_interrupt(const gpio_id_t portpin, const event_t evt) {
 
     EXTI->IMR1 |= BIT(pin); 		// Enable interrupt 0 (IM).
     EXTI->FTSR1 |= BIT(pin); 	    // Trigger EXTI on falling edge
-
-    //initialize exti handler to NULL
-    for(uint8_t i = 0; i < NUM_EXTIINTERRUPTS; i++) {
-        exti_handlers[i].callback = NULL;
-    }
 }
 
 void gpio_clear_interruptflag(const exti_id_t pin) {
@@ -156,21 +151,22 @@ void exti_dispatch(uint8_t exti_num)
 
 void EXTI0_IRQHandler(void)
 {
-    exti_dispatch(0);
     gpio_clear_interruptflag(EXTI0);
+    exti_dispatch(0);
+
 }
 
 void EXTI4_IRQHandler(void)
 {
-    exti_dispatch(4);
     gpio_clear_interruptflag(EXTI4);
+    exti_dispatch(4);
 }
 
 void EXTI5_9_IRQHandler(void) {
     for(uint8_t i = 5; i <= 9; i++) {
         if(EXTI->PR1 & BIT(i)) {
-            exti_dispatch(i);
             gpio_clear_interruptflag(i);
+            exti_dispatch(i);
         }
     }
 }

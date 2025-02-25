@@ -18,3 +18,7 @@ void led_off(stefi_led_t id) {
 void led_toggle(stefi_led_t id) {
     gpio_toggle(leds[id].portpin);
 }
+
+void user_led_set(uint8_t mask) {
+
+}
