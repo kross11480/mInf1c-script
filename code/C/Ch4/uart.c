@@ -3,6 +3,7 @@
 /**********************************************************************/
 #include "uart.h"
 #include "gpio.h"
+#include "peripheral.h"
 
 typedef struct {
     uint32_t CR1;
@@ -29,9 +30,9 @@ UART_typeDef *uart = USART2;
 
 void uart_configure(){
     //UM2397: USART2 (PA2/PA3) connected to STLINK-V3E Virtual COM port.
-    RCC->APB1ENR |= (1 << 17); //switch on UART2
-    RCC->APB2ENR |= (1 << 14); //UART1
-    RCC->AHB2ENR |= (1 << 0); //GPIOA
+    peripheral_uart2_enable();
+    peripheral_uart1_enable();
+    peripheral_gpioA_enable();
     gpio_set_alternate_function(port_uart_tx, AF7);
     gpio_set_alternate_function(port_uart_rx, AF7);
     gpio_set_mode(port_uart_tx, MODER_AF);
@@ -62,4 +63,12 @@ unsigned char uart_poll_in()
     /* Check if uart is initialized */
     while ( (uart->ISR & (1 << 5)) != (1 << 5));
     return (unsigned char) (uart->RDR & 0xFF);
+}
+
+void uart_tx(const uint8_t *buf, size_t len)
+{
+    for(uint32_t i = 0; i < len; i++)
+    {
+        uart_poll_out(buf[i]);
+    }
 }

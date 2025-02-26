@@ -1,4 +1,7 @@
 //Library problem:
+//* Do not forget /r/n in printf to flush data
+//* return from irq on spurious irq signals or debounce fail
+//* printf for test
 //* init overwriting exti handler
 //* state action should not depend on previous state therefore all led's 0
 //* debouncing
@@ -11,6 +14,8 @@
 #include "button.h"
 #include "led.h"
 #include "timer.h"
+#include "stdio.h"
+#include "uart.h"
 
 //Function
 void s0_callback();
@@ -41,6 +46,9 @@ stefi_button_t button_todebounce;
 #define DEB_TIMER_ID TIM4
 #define DEB_TIMER_IT INTERRUPT_SOURCE_TIM4
 
+#define PERF_TIMER_ID TIM6
+#define PERF_TIMER_IT INTERRUPT_SOURCE_TIM6
+
 void user_led_off() {
     led_off(LED_RED);
     led_off(LED_YELLOW);
@@ -48,29 +56,24 @@ void user_led_off() {
     led_off(LED_BLUE);
 }
 void state_action() {
+    user_led_off();
+    timer_reset(TIMER_ID);
     switch (state) {
         case OFF:
-            //stop the timer, no interrupts, no toggling
-            user_led_off();
-            timer_reset(TIMER_ID);
             break;
         case LED_RED_1_HZ:
-            user_led_off();
             timer_init_periodic(TIMER_ID, TIMER_IT, timer_expires, 16000, 500);
             timer_start(TIMER_ID);
             break;
         case LED_YELLLOW_2_HZ:
-            user_led_off();
             timer_init_periodic(TIMER_ID, TIMER_IT, timer_expires, 16000, 250);
             timer_start(TIMER_ID);
             break;
         case LED_GREEN_4_HZ:
-            user_led_off();
             timer_init_periodic(TIMER_ID, TIMER_IT, timer_expires, 16000, 125);
             timer_start(TIMER_ID);
             break;
         case LED_BLUE_8_HZ:
-            user_led_off();
             timer_init_periodic(TIMER_ID, TIMER_IT, timer_expires, 16000, 63);
             timer_start(TIMER_ID);
             break;
@@ -99,41 +102,48 @@ void timer_expires() {
 }
 
 void s0_callback() {
-    //State transition
-    button_todebounce = BUTTON_S0;
     timer_start(DEB_TIMER_ID);
+    timer_start(PERF_TIMER_ID);
+    button_todebounce = BUTTON_S0;
 }
 
 void s1_callback() {
-    button_todebounce = BUTTON_S1;
     timer_start(DEB_TIMER_ID);
+    button_todebounce = BUTTON_S1;
 }
 
 void debounced_toggle() {
     timer_reset(DEB_TIMER_ID); //reset timer
     bool debounced_state_is_pressed = button_is_pressed(button_todebounce);
-    if (debounced_state_is_pressed) {
-        if (button_todebounce == BUTTON_S0) {
+    if(!debounced_state_is_pressed)
+        return;
+    switch(button_todebounce) {
+        case BUTTON_S0:
             g_event = S0_pressed;
-        }
-        if (button_todebounce == BUTTON_S1) {
+            break;
+        case BUTTON_S1:
             g_event = S1_pressed;
-        }
+            break;
+        default:
+            break;
     }
-
     //state transition
-    if(g_event == S0_pressed && state < NUM_STATE) {
+    if(g_event == S0_pressed && state < NUM_STATE - 1) {
         state++;
-    }
-
-    if(g_event == S1_pressed && state > OFF) {
+        printf("New State: %d \r\n", state);
+        state_action();
+    } else if(g_event == S1_pressed && state > OFF) {
         state--;
+        printf("New State: %d \r\n", state);
+        state_action();
     }
-    //State Action: Change timer period based on the state
-    state_action();
+}
+
+void perf_timer_overflow() {
 }
 
 void main() {
+
     led_init(LED_RED);
     led_init(LED_YELLOW);
     led_init(LED_GREEN);
@@ -144,10 +154,13 @@ void main() {
     button_interrupt_init(BUTTON_S0, s0_callback);
     button_interrupt_init(BUTTON_S1, s1_callback);
 
-    timer_init(TIMER_ID);
+    //uart_configure();
+    printf("Start Flashing Light App \r\n");
 
     //initialize debounce timer to 10ms
+    timer_init(TIMER_ID);
     timer_init_periodic(DEB_TIMER_ID, DEB_TIMER_IT, debounced_toggle, 16000, 40);
+    timer_init_periodic(PERF_TIMER_ID, PERF_TIMER_IT, perf_timer_overflow, 16000, 5000);
 
     while(1) {
     }

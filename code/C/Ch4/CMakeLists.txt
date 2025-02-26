@@ -11,7 +11,7 @@ add_executable(3.elf 3.c startup.c timer.c peripheral.c gpio.c nvic.c interrupts
 add_executable(4.elf 4.c startup.c timer.c peripheral.c gpio.c nvic.c interrupts.c)
 add_executable(5.elf 5.c startup.c timer.c peripheral.c gpio.c nvic.c interrupts.c button.c board.c)
 add_executable(6.elf 6.c startup.c timer.c peripheral.c gpio.c nvic.c interrupts.c button.c led.c board.c)
-add_executable(7.elf 7.c startup.c timer.c peripheral.c gpio.c nvic.c interrupts.c button.c led.c board.c)
+add_executable(7.elf 7.c startup.c timer.c peripheral.c gpio.c nvic.c interrupts.c button.c led.c board.c syscalls.c uart.c)
 
 
 set(HEX_FILE ${PROJECT_BINARY_DIR}/${TARGET_NAME}.hex)
