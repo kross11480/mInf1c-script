@@ -4,9 +4,11 @@ Concepts: Interrupts and Timers
 3. Dispatch mechanism: Multiple Timer Example 
 4. EXTI Example: Read Button 
 5. Debouncing Button with Interrupts, Mode: One Pulse 
-6. Example: Reaction Game
-7. PWM using Timers: Fading Lights 
-8. Timer Mode: Input Capture 
+6. Traffic Light Ex
+7. Flashing lights (1Hz,..8 hZ)
+8. Example: Reaction Game
+9. PWM using Timers: Fading Lights 
+10. Timer Mode: Input Capture 
 
 Concepts: Data
 1. DMA
