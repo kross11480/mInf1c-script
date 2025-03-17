@@ -4,16 +4,6 @@
 #include "util.h"
 #include "interrupts.h"
 
-//Add __weak if irq handler defined in example or main
-
-typedef struct {
-    uint32_t CTRL;
-    uint32_t LOAD;
-    uint32_t VAL;
-} SysTick_t;
-
-#define SysTick ((SysTick_t *) 0xE000E010)
-
 typedef struct
 {
   uint32_t CR1;         /*!< TIM control register 1,                   Address offset: 0x00 */
@@ -63,57 +53,12 @@ typedef struct
 #define TIM17_BASE ((TIM_t *) 0x40014800)
 
 
-TIM_t *timers[] = {(TIM_t*) SysTick, TIM1_BASE, TIM2_BASE, TIM3_BASE, TIM4_BASE, NULL, TIM6_BASE, TIM7_BASE, TIM8_BASE,
+TIM_t *timers[] = {(TIM_t*) NULL, TIM1_BASE, TIM2_BASE, TIM3_BASE, TIM4_BASE, NULL, TIM6_BASE, TIM7_BASE, TIM8_BASE,
     NULL, NULL, NULL, NULL, NULL, NULL, TIM15_BASE, TIM16_BASE, TIM17_BASE, NULL, NULL, NULL};
-
-void _systick_init()
-{
-    SysTick->CTRL |= (1 << 2); //1: Clock 0: Clock/8.
-    SysTick->CTRL |= (1 << 1); //enable interrupt
-    SysTick->LOAD = 16000; //System Core Clock=16MHz
-}
-
-void _systick_start()
-{
-    SysTick->VAL = 0;
-    SysTick->CTRL |= (1 << 0); //start timer
-}
-
-void _systick_stop()
-{
-    SysTick->CTRL |= (0 << 0); //stop timer
-}
-
-void _systick_restart()
-{
-    _systick_stop();
-    _systick_start();
-}
-
-uint32_t _systick_get_ms()
-{
-    uint32_t current_time = SysTick->VAL;
-    return (0xFFFFFF - current_time)/TICKS_PER_MS;
-}
-
-uint32_t _systick_get_s()
-{
-    uint32_t current_time = SysTick->VAL;
-    return (0xFFFFFF - current_time)/TICKS_PER_MS;
-}
-
-void _systick_delay_ms(uint32_t time_in_ms)
-{
-    while (_systick_get_ms() < time_in_ms);
-    _systick_restart();
-}
 
 void timer_init(const tim_id_t timer){
     switch (timer)
     {
-    case SYSTICK:
-        _systick_init(); //Intialize Systick Clock for 16 tick per us
-        break;
     case TIM1:
         peripheral_tim1_enable();
         break;
@@ -173,6 +118,117 @@ void timer_set_period(const tim_id_t timer_id, uint16_t prescaler, uint32_t peri
     }
 }
 
+void timer_set_mode_pwm(const tim_id_t timer_id, uint32_t channel)
+{
+    TIM_t *tim = timers[timer_id];
+    uint8_t shift = (channel & 1) ? 4 : 12;
+    uint8_t mode = 6; //0110 = PWM Mode 1, add mode 2 later
+    switch(timer_id) {
+        case TIM1:
+        case TIM2:
+        case TIM3:
+        case TIM4:
+        case TIM6:
+        case TIM7:
+        case TIM8:
+        case TIM15:
+        case TIM16:
+        case TIM17:
+        //set mode
+        if (channel == 0 || channel == 1) {
+            tim->CCMR1 |=  mode << (shift+4);       // OCM2 field = PWM
+            tim->CCMR1 |= BIT(3) << shift; // Output compare 1 preload enable
+        } else {
+            tim->CCMR2 |=  mode << (shift + 4);       // OCM2 field = PWM
+            tim->CCMR2 |= BIT(3) << shift; // Output compare 2 preload enable
+        }
+        break;
+        default:
+            break;
+    }
+}
+
+void timer_set_compare(const tim_id_t timer_id, uint32_t channel, uint32_t duty)
+{
+    TIM_t *tim = timers[timer_id];
+
+    switch(timer_id) {
+        case TIM1:
+        case TIM2:
+        case TIM3:
+        case TIM4:
+        case TIM8:
+        case TIM15:
+        case TIM16:
+        case TIM17:
+        //set compare register
+        switch(channel) {
+            case 1:
+                tim->CCR1 = duty;
+            break;
+            case 2:
+                tim->CCR2 = duty;
+            break;
+            case 3:
+                tim->CCR3 = duty;
+            break;
+            case 4:
+                tim->CCR2 = duty;
+            break;
+            default:
+                break;
+        }
+        break;
+        default:
+            break;
+    }
+}
+
+void timer_cc_enable(const tim_id_t timer_id, uint32_t channel)
+{
+    TIM_t *tim = timers[timer_id];
+    uint8_t shift;
+    uint8_t polarity = 1; //
+    switch(timer_id) {
+        case TIM1:
+        case TIM2:
+        case TIM3:
+        case TIM4:
+        case TIM8:
+        case TIM15:
+        case TIM16:
+        case TIM17:
+        //set compare register
+        switch(channel) {
+            case 1:
+                shift = 0;
+                tim->CCER |= polarity << (shift + 1);    // OC signal is active low
+                tim->CCER |= BIT(0) << (shift); //OC is output
+                break;
+            case 2:
+                shift = 4;
+                tim->CCER |= polarity << (shift + 1);    // OC signal is active low
+                tim->CCER |= BIT(0) << (shift); //OC is output
+                break;
+            case 3:
+                shift = 8;
+                tim->CCER |= polarity << (shift + 1);    // OC signal is active low
+                tim->CCER |= BIT(0) << (shift); //OC is output
+                break;
+            case 4:
+                shift = 12;
+                tim->CCER |= polarity << (shift + 1);    // OC signal is active low
+                tim->CCER |= BIT(0) << (shift); //OC is output
+                break;
+            default:
+                break;
+        }
+        break;
+        default:
+            break;
+    }
+}
+
 void timer_enable_interrupt(const tim_id_t timer_id)
 {
     TIM_t *tim = timers[timer_id];
@@ -192,9 +248,6 @@ void timer_start(const tim_id_t timer_id)
     TIM_t *tim = timers[timer_id];
     switch (timer_id)
     {
-    case SYSTICK:
-        _systick_start();
-        break;
     case TIM1:
     case TIM2:
     case TIM3:
@@ -216,9 +269,6 @@ void timer_reset(const tim_id_t timer_id)
     TIM_t *tim = timers[timer_id];
     switch (timer_id)
     {
-    case SYSTICK:
-        _systick_stop();
-        break;
         case TIM1:
         case TIM2:
         case TIM3:
@@ -258,24 +308,6 @@ uint32_t timer_getcount(const tim_id_t timer_id)
         break;
     }
     return 0;
-}
-
-uint32_t timer_elapsed_ms()
-{
-    return _systick_get_ms();
-}
-
-void timer_delay_ms(uint32_t time_in_ms)
-{
-    _systick_delay_ms(time_in_ms);
-}
-
-void timer_delay_s(uint32_t time_in_s)
-{
-    for(uint32_t i = 0 ; i < time_in_s; i++)
-    {
-        while(!(SysTick->CTRL & (1<<16)));
-    }
 }
 
 void timer_interrupt_register_handler(const nvic_source_t tim_irq_num, callbackfn_typeDef fn)

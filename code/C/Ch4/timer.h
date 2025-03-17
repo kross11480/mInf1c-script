@@ -18,7 +18,10 @@ void timer_interrupt_register_handler(const nvic_source_t, callbackfn_typeDef);
 
 //set prescaler and ARR according to period
 void timer_set_period(const tim_id_t timer, uint16_t prescaler, uint32_t period);
-void timer_set_mode(); //periodic, oc, ic, pwm
+void timer_set_mode_pwm(const tim_id_t timer_id, uint32_t channel);
+void timer_set_compare(const tim_id_t timer_id, uint32_t channel, uint32_t duty);
+void timer_cc_enable(const tim_id_t timer_id, uint32_t channel);
+
 void timer_init_periodic(tim_id_t tim, nvic_source_t tim_irq_num,  callbackfn_typeDef fn, uint16_t prescaler, uint32_t period);
 void timer_change_period(tim_id_t tim, uint32_t period);
 
@@ -32,7 +35,6 @@ void timer_delay_s(uint32_t time_in_s);
 
 enum _timer_ids
 {
-    SYSTICK = 0,
     TIM1 = 1,
     TIM2 = 2,
     TIM3 = 3,
