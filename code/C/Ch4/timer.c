@@ -121,7 +121,7 @@ void timer_set_period(const tim_id_t timer_id, uint16_t prescaler, uint32_t peri
 void timer_set_mode_pwm(const tim_id_t timer_id, uint32_t channel)
 {
     TIM_t *tim = timers[timer_id];
-    uint8_t shift = (channel & 1) ? 4 : 12;
+    uint8_t shift = (channel & 1) ? 0 : 8;
     uint8_t mode = 6; //0110 = PWM Mode 1, add mode 2 later
     switch(timer_id) {
         case TIM1:
@@ -135,7 +135,7 @@ void timer_set_mode_pwm(const tim_id_t timer_id, uint32_t channel)
         case TIM16:
         case TIM17:
         //set mode
-        if (channel == 0 || channel == 1) {
+        if (channel == 1 || channel == 2) {
             tim->CCMR1 |=  mode << (shift+4);       // OCM2 field = PWM
             tim->CCMR1 |= BIT(3) << shift; // Output compare 1 preload enable
         } else {
@@ -322,6 +322,15 @@ void timer_init_periodic(tim_id_t tim, nvic_source_t tim_irq_num,  callbackfn_ty
     timer_interrupt_register_handler(tim_irq_num, fn);
     timer_enable_interrupt(tim);
     interrupts_enable_source(tim_irq_num);
+}
+
+void timer_init_pwm(tim_id_t tim, uint32_t channel, uint16_t prescaler, uint32_t period, uint32_t duty)
+{
+    timer_init(tim);
+    timer_set_period(tim, prescaler, period);
+    timer_set_mode_pwm(tim, channel);
+    timer_set_compare(tim, channel, duty);
+    timer_cc_enable(tim, channel);
 }
 
 void timer_change_period(tim_id_t timer_id, uint32_t period) {
