@@ -10,9 +10,14 @@ _estack = ORIGIN(RAM) + LENGTH(RAM); /* ram end */
 
 SECTIONS
 {
+
 	.isr_vector     : { KEEP(*(.isr_vector)) }  > FLASH
-    .text           : { KEEP(*(.text*)) }       > FLASH
-    .rodata         : { KEEP(*(.text*)) }       > FLASH
+
+	.text :
+        {
+            *(.text*)   /* All .text and .text.function_name, no keep */
+            *(.rodata*) /* Read-only data */
+        } > FLASH
 
 	.data :
 	{
