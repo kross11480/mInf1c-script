@@ -5,8 +5,19 @@ include(${CMAKE_SOURCE_DIR}/cmake/target-mcu.cmake)
 # project settings
 project(examples C ASM)
 
-add_library(libstefi src/gpio.c src/peripheral.c src/util.c src/startup.c)
+add_library(libstefi
+        src/gpio.c
+        src/peripheral.c
+        src/util.c
+        src/startup.c)
+
 target_include_directories(libstefi PUBLIC include)
+
+# Private implementation headers
+target_include_directories(libstefi
+        PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/internal
+)
 
 #add example project
 add_subdirectory(examples/1-Blinky)
