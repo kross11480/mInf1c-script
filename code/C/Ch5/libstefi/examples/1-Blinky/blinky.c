@@ -4,7 +4,7 @@
 #include "libstefi/util.h"
 
 void main(){
-    peripheral_gpioC_enable();
+    peripheral_gpio_enable(PERIPHERAL_ID_GPIOC);
     gpio_set_mode(C5, MODER_OUTPUT);
     while (1) {
         gpio_toggle(C5);
