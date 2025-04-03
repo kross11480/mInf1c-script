@@ -1,6 +1,7 @@
 #include "libstefi/gpio.h"
 #include "../src/internal/gpio_internal.h"
 #include <stdint.h>
+#include <libstefi/util.h>
 
 static inline GPIO_typeDef * gpio_get_base_address(const gpio_id_t portpin)
 {
@@ -16,6 +17,14 @@ void gpio_set_mode(const gpio_id_t portpin, moder_t mode)
 
     gpio->MODER &= ~(3<<(2*pin));
     gpio->MODER |= (mode<<(2*pin));
+}
+
+moder_t gpio_get_mode(const gpio_id_t portpin)
+{
+    uint16_t pin = portpin & 0xFF;
+    GPIO_typeDef *gpio = gpio_get_base_address(portpin);
+
+    return GET_BITS(gpio->MODER, 2*pin, 2);
 }
 
 void gpio_write(const gpio_id_t portpin, sig_t val)

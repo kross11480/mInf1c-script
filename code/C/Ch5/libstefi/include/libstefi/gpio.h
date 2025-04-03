@@ -21,6 +21,9 @@ sig_t gpio_read(const gpio_id_t portpin);
 void gpio_toggle(const gpio_id_t portpin);
 void gpio_set_alternate_function(const gpio_id_t portpin, afr_t af);
 
+/* For testing*/
+moder_t gpio_get_mode(const gpio_id_t portpin);
+
 enum _stefilite_ids
 {
     A0 = 0x000, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15,
