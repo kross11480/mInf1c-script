@@ -22,9 +22,16 @@ target_include_directories(libstefi
         ${CMAKE_CURRENT_SOURCE_DIR}/src/internal
 )
 
-#add example project
-add_subdirectory(examples/1-Blinky)
+# Function to automatically add all subdirectories under a given directory
+function(add_subdirectories base_dir)
+    file(GLOB subdirectories LIST_DIRECTORIES true ${base_dir}/*)
+    foreach(subdir ${subdirectories})
+        if(IS_DIRECTORY ${subdir})
+            add_subdirectory(${subdir})
+        endif()
+    endforeach()
+endfunction()
 
-#add test project for low level testing of register map
-add_subdirectory(tests/1-LL_Blinky)
-add_subdirectory(tests/2-Test_Gpio)
+# Automatically add all example and test projects
+add_subdirectories(${CMAKE_SOURCE_DIR}/examples)
+add_subdirectories(${CMAKE_SOURCE_DIR}/tests)
