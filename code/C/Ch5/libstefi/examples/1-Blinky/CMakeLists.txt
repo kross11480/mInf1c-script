@@ -1,3 +1,3 @@
-add_executable(blinky blinky.c ../../src/startup.c)
+add_executable(blinky blinky.c)
 
 target_link_libraries(blinky libstefi)

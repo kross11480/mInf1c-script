@@ -12,6 +12,8 @@ add_library(libstefi
         src/uart.c
         src/startup.c
         src/syscalls.c
+        src/board.c
+        src/systick.c
 )
 
 target_include_directories(libstefi PUBLIC include)

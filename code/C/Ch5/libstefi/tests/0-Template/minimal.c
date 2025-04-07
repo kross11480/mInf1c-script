@@ -3,7 +3,7 @@
 
 void main() {
     uart_configure();
-    printf("Hallo Welt!\r\n");
+    printf("Hallo Weelt!\r\n");
     while(1) {
     }
 }
