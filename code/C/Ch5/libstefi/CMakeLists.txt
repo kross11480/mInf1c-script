@@ -14,6 +14,7 @@ add_library(libstefi
         src/syscalls.c
         src/board.c
         src/systick.c
+        src/interrupts.c
 )
 
 target_include_directories(libstefi PUBLIC include)

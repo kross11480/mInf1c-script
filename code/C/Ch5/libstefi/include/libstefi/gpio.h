@@ -1,6 +1,7 @@
 #ifndef GPIO_H
 #define GPIO_H
-
+#include "interrupts.h"
+#include "stdint.h"
 /**********************************************************************/
 /* GPIO (General Purpose Input and Output) Hardware Abstraction layer */
 /**********************************************************************/
@@ -11,7 +12,7 @@ typedef enum {LOW, HIGH} sig_t;
 typedef enum {MODER_INPUT, MODER_OUTPUT, MODER_AF, MODER_ANALOG} moder_t;
 typedef enum {NONE, PULL_UP, PULL_DOWN} pupdr_t;
 typedef enum {AFO, AF1, AF2, AF3, AF4, AF5, AF6, AF7, AF8, AF9, AF10, AF11, AF12, AF13, AF14, AF15,} afr_t;
-typedef enum {RISING_EDGE, FALLING_EDGE} event_t;
+typedef enum {RISING_EDGE, FALLING_EDGE} edge_t;
 
 /* GPIO Functions*/
 void gpio_set_mode(const gpio_id_t portpin, moder_t mode);
@@ -20,6 +21,13 @@ void gpio_write(const gpio_id_t portpin, sig_t val);
 sig_t gpio_read(const gpio_id_t portpin);
 void gpio_toggle(const gpio_id_t portpin);
 void gpio_set_alternate_function(const gpio_id_t portpin, afr_t af);
+
+/* EXTI Functions(extended interrupts mapped to GPIO Pins)*/
+void gpio_enable_interrupt(const gpio_id_t, const edge_t);
+void gpio_disable_interrupt(const gpio_id_t, const edge_t);
+
+void gpio_clear_interruptflag(const uint8_t);
+void gpio_interrupt_register_handler(const gpio_id_t portpin, callbackfn_typeDef);
 
 /* For testing*/
 moder_t gpio_get_mode(const gpio_id_t portpin);

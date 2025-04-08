@@ -8,7 +8,6 @@ typedef enum peripheral_id_uart peripheral_id_uart_t;
 void peripheral_gpio_enable(peripheral_id_gpio_t);
 void peripheral_tim_enable(peripheral_id_tim_t);
 void peripheral_uart_enable(peripheral_id_uart_t);
-
 void peripheral_exti_enable();
 
 enum peripheral_id_gpio {

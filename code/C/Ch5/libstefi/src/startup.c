@@ -7,6 +7,13 @@ extern unsigned int _sbss; // start .bss (allocated in RAM)
 extern unsigned int _ebss; // end .bss
 
 extern void SysTick_IRQHandler(void);
+extern void EXTI0_IRQHandler(void);
+extern void EXTI1_IRQHandler(void);
+extern void EXTI2_IRQHandler(void);
+extern void EXTI3_IRQHandler(void);
+extern void EXTI4_IRQHandler(void);
+extern void EXTI5_9_IRQHandler(void);
+
 
 extern void main();
 
@@ -55,11 +62,11 @@ void (* const paIsrFunc[16+102])(void) =
 	0,            /*   3 (0x0000004C)  RTC Wakeup timer through EXTI line 20 interrupt */
 	0,            /*   4 (0x00000050)  Flash global interrupt */
 	0,            /*   5 (0x00000054)  RCC global interrupt */
-	0,       /*   6 (0x00000058)  EXTI Line 0 interrupt */
-	0,            /*   7 (0x0000005C)  EXTI Line 1 interrupt */
-	0,            /*   8 (0x00000060)  EXTI Line 2 interrupt */
-	0,            /*   9 (0x00000064)  EXTI Line 3 interrupt */
-	0,            /*  10 (0x00000068)  EXTI Line 4 interrupt */
+	EXTI0_IRQHandler,       /*   6 (0x00000058)  EXTI Line 0 interrupt */
+	EXTI1_IRQHandler,            /*   7 (0x0000005C)  EXTI Line 1 interrupt */
+	EXTI2_IRQHandler,            /*   8 (0x00000060)  EXTI Line 2 interrupt */
+	EXTI3_IRQHandler,            /*   9 (0x00000064)  EXTI Line 3 interrupt */
+	EXTI4_IRQHandler,            /*  10 (0x00000068)  EXTI Line 4 interrupt */
 	0,            /*  11 (0x0000006C)  DMA1 channel 1 interrupt */
 	0,            /*  12 (0x00000070)  DMA1 channel 2 interrupt */
 	0,            /*  13 (0x00000074)  DMA1 channel 3 interrupt */
@@ -72,7 +79,7 @@ void (* const paIsrFunc[16+102])(void) =
 	0,            /*  20 (0x00000090)  USB low priority interrupts */
 	0,            /*  21 (0x00000094)  FDCAN1 interrupt 0 */
 	0,            /*  22 (0x00000098)  FDCAN1 interrupt 1 */
-	0,            /*  23 (0x0000009C)  EXTI line [9:5] interrupts */
+	EXTI5_9_IRQHandler,            /*  23 (0x0000009C)  EXTI line [9:5] interrupts */
 	0,            /*  24 (0x000000A0)  TIM1 break + TIM15 global interrupts */
 	0,            /*  25 (0x000000A4)  TIM1 update + TIM16 global interrupts */
 	0,            /*  26 (0x000000A8)  TIM1 trigger, commutation, direction change, index  + TIM17 interrupts */

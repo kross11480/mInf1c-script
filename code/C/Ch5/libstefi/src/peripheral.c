@@ -51,4 +51,8 @@ void peripheral_uart_enable(peripheral_id_uart_t id)
     *peripheral_uart_dev[id].rcc_reg |= BIT(pos);
 }
 
+void peripheral_exti_enable() {
+    RCC->APB2ENR |= BIT(0);//SYSCFG Enable
+}
+
 
