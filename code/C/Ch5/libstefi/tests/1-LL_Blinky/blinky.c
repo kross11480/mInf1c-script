@@ -17,6 +17,7 @@ void main(){
     GPIOC->MODER |= 1 << 8;
     GPIOC->MODER &= ~(1 << 9);
     while (1) {
+        //Bare Metal Toggle: approx 10 Cycles.
         GPIOC->ODR ^= (1 << 4);
         soft_delay_ms(250);
     }

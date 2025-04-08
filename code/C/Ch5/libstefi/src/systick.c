@@ -2,13 +2,20 @@
 /* SysTick Timer Hardware Abstraction layer*/
 /*********************************************************************/
 #include "libstefi/systick.h"
+
+#include <gpio_internal.h>
+
 #include "internal/systick_internal.h"
+
+volatile uint32_t ms_counter = 0; //2^32 => Overflow in 49 days
 
 void systick_init()
 {
     SysTick->CTRL |= (1 << 2); //1: Clock 0: Clock/8.
-    //SysTick->CTRL |= (1 << 1); //enable interrupt
-    SysTick->LOAD = 0xFFFFFF; //System Core Clock=16MHz
+    SysTick->CTRL |= (1 << 1); //enable interrupt
+
+    SysTick->LOAD = TICKS_PER_MS ; //System Core Clock=16MHz
+    SysTick->VAL   = 0;
 }
 
 void systick_start()
@@ -30,22 +37,31 @@ void systick_restart()
 
 uint32_t systick_get_ms()
 {
-    uint32_t current_time = SysTick->VAL;
-    uint32_t elapsed_time = (0xFFFFFF - current_time + 1);
-    uint32_t elapsed_time_ms = (elapsed_time) / TICKS_PER_MS;
-    return elapsed_time_ms;
+    return ms_counter;
 }
 
-void systick_delay_ms(uint32_t time_in_ms)
+uint32_t systick_get_us()
 {
-    while (systick_get_ms() < time_in_ms);
-    systick_restart();
+    return SysTick->VAL;
 }
 
-void systick_delay_s(uint32_t time_in_s)
+void systick_delay_ms(uint32_t delay)
 {
-    for(uint32_t i = 0 ; i < time_in_s; i++)
-    {
-        while(!(SysTick->CTRL & (1<<16)));
+    uint32_t current = ms_counter;
+    while((systick_get_ms() - current) <  delay){}
+}
+
+bool systick_expired(uint32_t *current, uint32_t period) {
+    uint32_t now = systick_get_ms();
+    if((now - *current) >= period) {
+        *current = now;
+        return true;
     }
+    return false;
+}
+
+/*********IRQ HANDLER ***************/
+void SysTick_IRQHandler(void) {
+    ms_counter++;
+    //generic dispatch (test read temp every  second)
 }

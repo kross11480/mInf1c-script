@@ -6,6 +6,8 @@ extern unsigned int _sidata; //start .data in FLASH
 extern unsigned int _sbss; // start .bss (allocated in RAM)
 extern unsigned int _ebss; // end .bss
 
+extern void SysTick_IRQHandler(void);
+
 extern void main();
 
 void Reset_Handler(void)
@@ -45,7 +47,7 @@ void (* const paIsrFunc[16+102])(void) =
     0,
     0,
     0,
-    0,
+    SysTick_IRQHandler,
     /* --- non-core vectors --- */
 	0,            /*   0 (0x00000040)  window watchdog interrupt */
 	0,            /*   1 (0x00000044)  PVD through EXTI line 16 interrupt */
