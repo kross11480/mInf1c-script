@@ -7,9 +7,9 @@
 
 //Add __weak if irq handler defined in example or main
 typedef struct {
-    uint32_t CTRL;
-    uint32_t LOAD;
-    uint32_t VAL;
+    volatile uint32_t CTRL;
+    volatile uint32_t LOAD;
+    volatile uint32_t VAL;
 } SysTick_t;
 
 #define SysTick ((SysTick_t *) 0xE000E010)

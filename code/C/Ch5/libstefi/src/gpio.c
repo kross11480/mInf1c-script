@@ -4,6 +4,25 @@
 #include <libstefi/peripheral.h>
 #include <libstefi/util.h>
 
+static const enum _nvic_interrupt_sources extipin_to_irq[16] = {
+    INTERRUPT_SOURCE_EXTI0,
+    INTERRUPT_SOURCE_EXTI1,
+    INTERRUPT_SOURCE_EXTI2,
+    INTERRUPT_SOURCE_EXTI3,
+    INTERRUPT_SOURCE_EXTI4,
+    INTERRUPT_SOURCE_EXTI5_9,
+    INTERRUPT_SOURCE_EXTI5_9,
+    INTERRUPT_SOURCE_EXTI5_9,
+    INTERRUPT_SOURCE_EXTI5_9,
+    INTERRUPT_SOURCE_EXTI5_9,
+    INTERRUPT_SOURCE_EXTI10_15,
+    INTERRUPT_SOURCE_EXTI10_15,
+    INTERRUPT_SOURCE_EXTI10_15,
+    INTERRUPT_SOURCE_EXTI10_15,
+    INTERRUPT_SOURCE_EXTI10_15,
+    INTERRUPT_SOURCE_EXTI10_15,
+};
+
 static struct {
     callbackfn_typeDef callback;
 } exti_handlers[NUM_EXTIINTERRUPTS];
@@ -101,7 +120,7 @@ void gpio_enable_interrupt(const gpio_id_t portpin, const edge_t evt) {
             EXTI->RTSR1 |= BIT(pin);
             break;
     }
-    	    // Trigger EXTI on falling edge
+    interrupts_enable_source(extipin_to_irq[pin]);
 }
 
 void gpio_clear_interruptflag(uint8_t pin) {
@@ -150,6 +169,15 @@ void EXTI4_IRQHandler(void)
 
 void EXTI5_9_IRQHandler(void) {
     for(uint8_t i = 5; i <= 9; i++) {
+        if(EXTI->PR1 & BIT(i)) {
+            gpio_clear_interruptflag(i);
+            exti_dispatch(i);
+        }
+    }
+}
+
+void EXTI10_15_IRQHandler(void) {
+    for(uint8_t i = 10; i <= 15; i++) {
         if(EXTI->PR1 & BIT(i)) {
             gpio_clear_interruptflag(i);
             exti_dispatch(i);
