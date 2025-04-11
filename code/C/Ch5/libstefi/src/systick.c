@@ -26,12 +26,12 @@ void systick_start()
 void systick_stop()
 {
     SysTick->CTRL &= ~(1 << 0); //stop timer
+    SysTick->VAL = 0; //Manual reset
 }
 
 void systick_restart()
 {
     systick_stop();
-    SysTick->VAL = 0; //Manual reset
     systick_start();
 }
 

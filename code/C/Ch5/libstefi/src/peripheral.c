@@ -41,8 +41,9 @@ void peripheral_gpio_enable(peripheral_id_gpio_t id)
 
 void peripheral_tim_enable(peripheral_id_tim_t id)
 {
-    uint8_t pos = peripheral_tim_dev[id].enable_bit;
-    *peripheral_tim_dev[id].rcc_reg |= BIT(pos);
+    // starting from 1 the timer id and not zero
+    uint8_t pos = peripheral_tim_dev[id-1].enable_bit;
+    *peripheral_tim_dev[id-1].rcc_reg |= BIT(pos);
 }
 
 void peripheral_uart_enable(peripheral_id_uart_t id)

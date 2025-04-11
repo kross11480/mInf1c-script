@@ -47,3 +47,7 @@ typedef struct
 #define TIM15_BASE ((TIM_t *) 0x40014000)
 #define TIM16_BASE ((TIM_t *) 0x40014400)
 #define TIM17_BASE ((TIM_t *) 0x40014800)
+
+//For compatibility, low level test code
+#define TIM1 TIM1_BASE
+#define TIM2 TIM2_BASE
