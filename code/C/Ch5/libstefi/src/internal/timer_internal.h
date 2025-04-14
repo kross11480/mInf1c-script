@@ -34,6 +34,7 @@ typedef struct
   volatile uint32_t DMAR;        /*!< TIM DMA address for full transfer,        Address offset: 0x3E0 */
 } TIM_t;
 
+#define NUM_TIMERINTERRUPTS 19
 
 #define TIM1_BASE ((TIM_t *) 0x40012C00)
 #define TIM2_BASE ((TIM_t *) 0x40000000)
@@ -51,3 +52,12 @@ typedef struct
 //For compatibility, low level test code
 #define TIM1 TIM1_BASE
 #define TIM2 TIM2_BASE
+#define TIM3 TIM3_BASE
+#define TIM4 TIM4_BASE
+#define TIM5 TIM5_BASE
+#define TIM6 TIM6_BASE
+#define TIM7 TIM7_BASE
+#define TIM8 TIM8_BASE
+#define TIM15 TIM15_BASE
+#define TIM16 TIM16_BASE
+#define TIM17 TIM17_BASE

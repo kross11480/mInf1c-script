@@ -4,6 +4,7 @@
 //Datatypes
 typedef void (*callbackfn_typeDef)();
 enum _nvic_interrupt_sources {
+    INTERRUPT_SOURCE_NONE = -1,
     INTERRUPT_SOURCE_EXTI0 = 6,
     INTERRUPT_SOURCE_EXTI1 = 7,
     INTERRUPT_SOURCE_EXTI2 = 8,

@@ -1,7 +1,7 @@
 #include <stdint.h>
-#include <stddef.h>
 #include <stdbool.h>
 #include "libstefi/interrupts.h"
+#include "libstefi/util.h"
 #include "internal/nvic_internal.h"
 
 #define NUM_INTERRUPTS 240
@@ -54,6 +54,7 @@ void interrupts_global_disable(void)
 
 void interrupts_enable_source(nvic_source_t irq_num)
 {
+    assert(irq_num >= 0);
     NVIC_BASE->ISER[irq_num/32] |= (1 << irq_num%32);
 }
 

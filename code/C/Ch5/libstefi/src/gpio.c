@@ -132,7 +132,7 @@ void gpio_interrupt_register_handler(const gpio_id_t portpin, callbackfn_typeDef
     exti_handlers[pin].callback =fn;
 }
 
-void exti_dispatch(uint8_t exti_num)
+static void exti_dispatch(uint8_t exti_num)
 {
     exti_handlers[exti_num].callback();
 }

@@ -14,6 +14,15 @@ extern void EXTI3_IRQHandler(void);
 extern void EXTI4_IRQHandler(void);
 extern void EXTI5_9_IRQHandler(void);
 
+extern void TIM2_IRQHandler(void);
+extern void TIM3_IRQHandler(void);
+extern void TIM4_IRQHandler(void);
+extern void TIM6_IRQHandler(void);
+extern void TIM7_IRQHandler(void);
+extern void TIM8_IRQHandler(void);
+extern void TIM15_IRQHandler(void);
+extern void TIM16_IRQHandler(void);
+extern void TIM17_IRQHandler(void);
 
 extern void main();
 
@@ -80,18 +89,18 @@ void (* const paIsrFunc[16+102])(void) =
 	0,            /*  21 (0x00000094)  FDCAN1 interrupt 0 */
 	0,            /*  22 (0x00000098)  FDCAN1 interrupt 1 */
 	EXTI5_9_IRQHandler,            /*  23 (0x0000009C)  EXTI line [9:5] interrupts */
-	0,            /*  24 (0x000000A0)  TIM1 break + TIM15 global interrupts */
-	0,            /*  25 (0x000000A4)  TIM1 update + TIM16 global interrupts */
-	0,            /*  26 (0x000000A8)  TIM1 trigger, commutation, direction change, index  + TIM17 interrupts */
+	TIM15_IRQHandler,            /*  24 (0x000000A0)  TIM1 break + TIM15 global interrupts */
+	TIM16_IRQHandler,            /*  25 (0x000000A4)  TIM1 update + TIM16 global interrupts */
+	TIM17_IRQHandler,            /*  26 (0x000000A8)  TIM1 trigger, commutation, direction change, index  + TIM17 interrupts */
 	0,            /*  27 (0x000000AC)  TIM1 capture compare interrupt */
-	0,            /*  28 (0x000000B0)  TIM2 global interrupt */
-	0,            /*  29 (0x000000B0)  TIM3 global interrupt */
-	0,            /*  30 (0x000000B0)  TIM4 global interrupt */
+	TIM2_IRQHandler,            /*  28 (0x000000B0)  TIM2 global interrupt */
+	TIM3_IRQHandler,            /*  29 (0x000000B0)  TIM3 global interrupt */
+	TIM4_IRQHandler,            /*  30 (0x000000B0)  TIM4 global interrupt */
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0,
+	TIM8_IRQHandler,
 	0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0,            /*  54 (0x00000118)  TIM6 + DAC1/3 underrun global interrupts */
-	0,            /*  55 (0x0000011C)  TIM7 + DAC2/4 underrun global interrupts */
+	TIM6_IRQHandler,            /*  54 (0x00000118)  TIM6 + DAC1/3 underrun global interrupts */
+	TIM7_IRQHandler,            /*  55 (0x0000011C)  TIM7 + DAC2/4 underrun global interrupts */
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0,
 };
