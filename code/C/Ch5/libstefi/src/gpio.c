@@ -51,6 +51,20 @@ moder_t gpio_get_mode(const gpio_id_t portpin)
     return GET_BITS(gpio->MODER, 2*pin, 2);
 }
 
+void gpio_set_output_type(const gpio_id_t portpin, otype_t otype) {
+    uint16_t pin = portpin & 0xFF;
+    GPIO_typeDef *gpio = gpio_get_base_address(portpin);
+    gpio->OTYPER &= ~(1 << pin); //reset to zero
+    gpio->OTYPER |= (otype << pin);
+
+}
+
+uint16_t gpio_get_port(const gpio_id_t portpin)
+{
+    return (portpin >> 8);
+}
+
+
 void gpio_write(const gpio_id_t portpin, sig_t val)
 {
     uint16_t pin = portpin & 0xFF;

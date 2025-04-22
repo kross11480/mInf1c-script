@@ -16,6 +16,7 @@ add_library(libstefi
         src/systick.c
         src/interrupts.c
         src/timer.c
+        src/i2c.c
 )
 
 target_include_directories(libstefi PUBLIC include)
