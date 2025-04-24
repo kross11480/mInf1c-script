@@ -22,7 +22,7 @@ void uart_configure(){
     gpio_set_mode(port_uart_rx, MODER_AF);
 
     //USART2->CR1 = 0;
-    USART2->BRR = 4000000/115200; //G4: 16Mhz, L4: 4Mhz
+    USART2->BRR = 16000000/115200; //G4: 16Mhz, L4: 4Mhz
     USART2->CR1 |= (1 << 0) | (1 << 2) | (1 << 3); //uart, receive, Transmit Enable
 
     //USART1->CR1 = 0;
@@ -47,6 +47,7 @@ void uart_putchar(char ch) {
     uart_poll_out(&ch, 1);
 }
 
+//This is bloking and not polling, change name
 unsigned char uart_poll_in()
 {
     /* Check if uart is initialized */

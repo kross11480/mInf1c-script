@@ -1,5 +1,6 @@
 #include "libstefi/i2c.h"
 
+#include <stdbool.h>
 #include <libstefi/util.h>
 #include "libstefi/peripheral.h"
 #include "internal/i2c_internal.h"
@@ -40,13 +41,40 @@ void i2c_readfrom(const uint16_t id, uint8_t address7b, uint8_t *buf, uint32_t l
 
     i2c->CR2 = ((address7b << 1) & 0x3FF); //Slave address
     i2c->CR2 |= BIT(25); //Stop=True
-    i2c->CR2 |= BIT(10); //Master request read
     i2c->CR2 |= (len & 0xFF) << 16;
+    i2c->CR2 |= BIT(10); //Master request read, before start
     i2c->CR2 |= BIT(13); //START
+
+
     for(uint32_t i = 0; i < len; i++) {
         while ((i2c->ISR & BIT(2)) != BIT(2)); //Receive Data Register empty
         buf[i] = i2c->RXDR; //READ BYTE
     }
 }
 
+void i2c_writeto(const uint16_t id, uint8_t address7b, uint8_t *buf, uint32_t len, bool repeat) {
+    I2C_typeDef *i2c = i2c_get_base_address(id);
+    uint32_t cr2 = 0;
 
+    cr2 = ((address7b << 1) & 0x3FF);//Slave address
+    cr2 |= (len & 0xFF) << 16;
+    if (!repeat) cr2 |= BIT(25); //Autoend
+    cr2 &= ~BIT(10);
+    cr2 |= BIT(13); //START
+
+    i2c->CR2 = cr2;
+
+    for(uint32_t i = 0; i < len; i++) {
+        while ((i2c->ISR & BIT(0)) != BIT(0)); //Wait for TXE
+        i2c->TXDR = buf[i]; //Write BYTE
+    }
+
+    if (repeat) {
+        // Wait for transfer complete (not auto-end)
+        while ((i2c->ISR & BIT(6)) != BIT(6));
+    } else {
+        // Wait for STOP
+        while ((i2c->ISR & BIT(5)) != BIT(5));
+        I2C1->ICR = BIT(5);
+    }
+}
