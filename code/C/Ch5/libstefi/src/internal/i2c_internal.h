@@ -19,3 +19,9 @@ typedef struct
 #define I2C1 ((I2C_typeDef *) 0x40005400)
 #define I2C2 ((I2C_typeDef *) 0x40005800)
 #define I2C3 ((I2C_typeDef *) 0x40005C00)
+
+#define I2C_ISR_BUSY BIT(15)
+#define I2C_CR2_AUTOEND BIT(25)
+#define I2C_CR2_START BIT(13)
+#define I2C_ISR_TXE BIT(0)
+#define I2C_ISR_STOPF BIT(5)
