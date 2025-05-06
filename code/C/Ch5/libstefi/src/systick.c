@@ -20,6 +20,7 @@ void systick_init()
 
 void systick_start()
 {
+    ms_counter = 0;
     SysTick->CTRL |= (1 << 0); //start timer
 }
 

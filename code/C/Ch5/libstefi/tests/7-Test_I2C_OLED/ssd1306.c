@@ -7,8 +7,11 @@
 #include "font.h"
 #include "libstefi/i2c.h"
 
+// Screenbuffer
+uint8_t SSD1306_Buffer[SSD1306_BUFFER_SIZE];
+
 static void ssd1306_write_cmd(uint8_t byte) {
-    i2c_writeto_reg(I2C_ID, SSD1306_I2C_ADDR, 0x80, &byte, 1);
+    i2c_writeto_reg(I2C_ID, SSD1306_I2C_ADDR, 0x00, &byte, 1);
 }
 
 static void ssd1306_write_data(uint8_t* buffer, uint32_t buff_size) {
@@ -46,8 +49,17 @@ void ssd1306_render_region(uint8_t *buf, struct render_region *region) {
 
     ssd1306_write_cmd_list(cmds, countof(cmds));
 
+    const uint32_t MAX_CHUNK = 128;
     uint32_t buflen = (end_col - region->x + 1) * (end_page - start_page + 1);
-    ssd1306_write_data(buf, buflen);
+    while (buflen > 0) {
+        uint32_t chunk = (buflen > MAX_CHUNK) ? MAX_CHUNK : buflen;
+        ssd1306_write_data(buf, chunk);
+
+        buf += chunk;
+        buflen -= chunk;
+    }
+
+    //ssd1306_write_data(buf, buflen);
 }
 
 void ssd1306_set_pixel(int x, int y, int on) {
@@ -84,16 +96,17 @@ void ssd1306_init() {
     gpio_write(DISPLAY_SWITCH_PIN, HIGH);
     gpio_set_mode(DISPLAY_SWITCH_PIN, MODER_OUTPUT);
     gpio_write(DISPLAY_SWITCH_PIN, LOW); //Display On
-    systick_delay_ms(100);
+    systick_delay_ms(100); //Wait for OLED to boot
 
     uint8_t cmds[] = {
-        0xAE, 0x20, 0x00, 0xB0, 0xC8,
-        0x00, 0x10, 0x40,
-        0x81, 0xFF,
-        0xA1, 0xA6,
-        0xA8, 0x3F,
-        0xA4,
-        0xD3, 0x00,
+        0xAE, 0x20, 0x00,//On, Horizontal Address Mode
+        0xB0, 0xC8, //Start Page 0, Vertical Flip (Normal, C0)
+        0x00, 0x10, 0x40, //low and high column start at 0,0, ram row 0 mapped to column 0
+        0x81, 0xFF, //Set Contrast, i.e brightest lit pixels
+        0xA1, 0xA6, //Mirror Image (used with C8), Normal 1 is ON pixel
+        0xA8, 0x3F, //set multiplex ratio for 64px high display
+        0xA4, //Entire Display on
+        0xD3, 0x00, //Display offset 00
         0xD5, 0xF0,
         0xD9, 0x22,
         0xDA, 0x12,
@@ -104,43 +117,6 @@ void ssd1306_init() {
 
     //uint8_t cmds[] = {0xAE, 0x20, 0x00, 0xB0, 0xC8};
     ssd1306_write_cmd_list(cmds, countof(cmds));
-
-    // ssd1306_write_cmd(0x00); //---set low column address
-    // ssd1306_write_cmd(0x10); //---set high column address
-    // ssd1306_write_cmd(0x40); //--set start line address - CHECK
-    //
-    // //Set Contrast
-    // ssd1306_write_cmd(0X81);
-    // ssd1306_write_cmd(0xFF);
-    //
-    // ssd1306_write_cmd(0xA1); //--set segment re-map 0 to 127 -
-    // ssd1306_write_cmd(0xA6); //--set normal color
-    //
-    // ssd1306_write_cmd(0xA8); //--set multiplex ratio(1 to 64) -
-    // ssd1306_write_cmd(0x3F); //64 lines of height
-    //
-    // ssd1306_write_cmd(0xA4); //0xa4,Output follows RAM content;0xa5,Output ignores RAM content
-    //
-    // ssd1306_write_cmd(0xD3); //-set display offset -
-    // ssd1306_write_cmd(0x00); //-not offset
-    //
-    // ssd1306_write_cmd(0xD5); //--set display clock divide ratio/oscillator frequency
-    // ssd1306_write_cmd(0xF0); //--set divide ratio
-    //
-    // ssd1306_write_cmd(0xD9); //--set pre-charge period
-    // ssd1306_write_cmd(0x22); //
-    //
-    // ssd1306_write_cmd(0xDA); //--set com pins hardware configuration -
-    // ssd1306_write_cmd(0x12);
-    //
-    // ssd1306_write_cmd(0xDB); //--set vcomh
-    // ssd1306_write_cmd(0x20); //0x20,0.77xVcc
-    //
-    // ssd1306_write_cmd(0x8D); //--set DC-DC enable
-    // ssd1306_write_cmd(0x14); //
-    //
-    // ssd1306_write_cmd(0xAF); //--turn on SSD1306 panel
-
 }
 
 // Clear screen (set buffer to 0)

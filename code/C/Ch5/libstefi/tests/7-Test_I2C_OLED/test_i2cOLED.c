@@ -11,17 +11,18 @@
 
 
 int main(void) {
+    uart_configure();
+
     systick_init();
     systick_start();
 
     ssd1306_init();
 
-    // Clear screen
-    memset(SSD1306_Buffer, 0x00, sizeof(SSD1306_Buffer));
-    //Update Screen
+    memset(SSD1306_Buffer, 0x00, SSD1306_BUFFER_SIZE);
     ssd1306_update_screen();
 
     //Write a Character/string
+
     char *text[] = {
         "A long time ago",
         "  on an OLED ",
@@ -35,29 +36,52 @@ int main(void) {
         y+=16;
     }
     ssd1306_update_screen();
-    //systick_delay_ms(1000);
+    systick_delay_ms(1000);
 
-    // struct render_region region =  {
-    //     0,
-    //     0,
-    //     SSD1306_WIDTH,
-    //     SSD1306_HEIGHT,
-    //     };
-    //
-    //
-    // // zero the entire display
-    // uint8_t buf[SSD1306_WIDTH*SSD1306_HEIGHT/8];
-    // memset(buf, 0xFF, countof(buf));
-    // ssd1306_render_region(buf, &region);
-    //
-    // // memset(SSD1306_Buffer, 0xFF, SSD1306_BUFFER_SIZE);
-    // // ssd1306_update_screen();
-    // struct render_region region1 = {
-    // 48,
-    // 32,
-    // 26,
-    // 32};
-    // ssd1306_render_region(berry26x32, &region1);
+    struct render_region region =  {
+        0,
+        0,
+        SSD1306_WIDTH,
+        SSD1306_HEIGHT,
+        };
+
+
+    // zero the entire display
+    systick_restart();
+    memset(SSD1306_Buffer, 0xFF, SSD1306_BUFFER_SIZE);
+    uint32_t t_in_ms = systick_get_ms();
+    printf("memset screen: %d \r\n", t_in_ms);
+
+    systick_restart();
+    ssd1306_update_screen();
+    t_in_ms = systick_get_ms();
+    printf("screen: %d \r\n", t_in_ms);
+
+    //Test Render Region
+    struct render_region region1 = {
+    48,
+    32,
+    26,
+    32};
+    systick_restart();
+    ssd1306_render_region(berry26x32, &region1);
+    t_in_ms = systick_get_ms();
+    printf("render and partial update screen: %d \r\n", t_in_ms);
+
+    systick_delay_ms(1000);
+
+
+    struct render_region region2 = {
+        0,
+        0,
+        128,
+        64};
+    memset(SSD1306_Buffer, 0x00, SSD1306_BUFFER_SIZE);
+
+    systick_restart();
+    ssd1306_render_region(SSD1306_Buffer, &region2);
+    t_in_ms = systick_get_ms();
+    printf("render and partial update screen: %d \r\n", t_in_ms);
     while(1) {
     }
 }
