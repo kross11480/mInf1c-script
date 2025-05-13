@@ -80,10 +80,86 @@ void timer_set_period(const tim_id_t timer_id, uint16_t prescaler, uint32_t peri
     TIM_t *tim = timers[timer_id];
 
     tim->PSC = prescaler - 1; //Set prescaler
-    tim->ARR = period - 1; //Set period
+    tim->ARR = period; //Set period
     tim->CNT = 0;
 }
 
+void timer_set_mode_pwm(const tim_id_t timer_id, uint32_t channel)
+{
+    assert(timer_id > 0);
+    TIM_t *tim = timers[timer_id];
+
+    uint8_t shift = (channel & 1) ? 0 : 8;
+    uint8_t mode = 6; //0110 = PWM Mode 1, add mode 2 later
+    //set mode
+    if (channel == 1 || channel == 2) {
+        tim->CCMR1 |=  mode << (shift+4);       // OCM2 field = PWM
+        tim->CCMR1 |= BIT(3) << shift; // Output compare 1 preload enable
+    } else {
+        tim->CCMR2 |=  mode << (shift + 4);       // OCM2 field = PWM
+        tim->CCMR2 |= BIT(3) << shift; // Output compare 2 preload enable}
+    }
+}
+
+void timer_set_compare(const tim_id_t timer_id, uint32_t channel, uint32_t duty)
+{
+    assert(timer_id > 0);
+    TIM_t *tim = timers[timer_id];
+
+    //set compare register
+    switch(channel) {
+        case 1:
+            tim->CCR1 = duty;
+            break;
+        case 2:
+            tim->CCR2 = duty;
+            break;
+        case 3:
+            tim->CCR3 = duty;
+            break;
+        case 4:
+            tim->CCR4 = duty;
+            break;
+        default:
+            break;
+        }
+}
+
+void timer_cc_enable(const tim_id_t timer_id, uint32_t channel)
+{
+    assert(timer_id > 0);
+    TIM_t *tim = timers[timer_id];
+    uint8_t shift;
+    uint8_t polarity = 1; //
+
+    switch(channel) {
+        case 1:
+            shift = 0;
+            tim->CCER |= polarity << (shift + 1);    // OC signal is active low
+            tim->CCER |= BIT(0) << (shift); //OC is output
+            break;
+        case 2:
+            shift = 4;
+            tim->CCER |= polarity << (shift + 1);    // OC signal is active low
+            tim->CCER |= BIT(0) << (shift); //OC is output
+            break;
+        case 3:
+            shift = 8;
+            tim->CCER |= polarity << (shift + 1);    // OC signal is active low
+            tim->CCER |= BIT(0) << (shift); //OC is output
+            break;
+        case 4:
+            shift = 12;
+            tim->CCER |= polarity << (shift + 1);    // OC signal is active low
+            tim->CCER |= BIT(0) << (shift); //OC is output
+            break;
+        default:
+            break;
+    }
+    // Enable auto-reload preload & UPDATE GENERATION
+    tim->CR1 |= BIT(7); // ARPE
+    tim->EGR |= BIT(0); // UG: update registers
+}
 /*******Interrupts*****************/
 
 static inline void timer_clear_interruptflag(const tim_id_t timer_id)
