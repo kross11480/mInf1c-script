@@ -2,7 +2,7 @@
 set(LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/configs/link.ld)
 
 # compiler and linker options
-add_compile_options(-mcpu=cortex-m4 -mthumb)
+add_compile_options(-mcpu=cortex-m4 -mthumb -O2)
 add_compile_options(-ffunction-sections -fdata-sections)
 add_compile_options(-g -Wall -std=c99 -ffreestanding)
 add_compile_options(-ffunction-sections -fdata-sections)
