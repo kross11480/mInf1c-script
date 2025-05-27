@@ -4,21 +4,29 @@
 #include <libstefi/peripheral.h>
 #include <libstefi/util.h>
 
-// define the opaque type
-struct gpio_port {
-    GPIO_typeDef* regs;  // Embed actual port register layout
+static const enum _nvic_interrupt_sources extipin_to_irq[16] = {
+    INTERRUPT_SOURCE_EXTI0,
+    INTERRUPT_SOURCE_EXTI1,
+    INTERRUPT_SOURCE_EXTI2,
+    INTERRUPT_SOURCE_EXTI3,
+    INTERRUPT_SOURCE_EXTI4,
+    INTERRUPT_SOURCE_EXTI5_9,
+    INTERRUPT_SOURCE_EXTI5_9,
+    INTERRUPT_SOURCE_EXTI5_9,
+    INTERRUPT_SOURCE_EXTI5_9,
+    INTERRUPT_SOURCE_EXTI5_9,
+    INTERRUPT_SOURCE_EXTI10_15,
+    INTERRUPT_SOURCE_EXTI10_15,
+    INTERRUPT_SOURCE_EXTI10_15,
+    INTERRUPT_SOURCE_EXTI10_15,
+    INTERRUPT_SOURCE_EXTI10_15,
+    INTERRUPT_SOURCE_EXTI10_15,
 };
 
-static gpio_port_t gpio_ports[] = {
-    {GPIOA},
-    {GPIOB},
-    {GPIOC},
-};
+static struct {
+    callbackfn_typeDef callback;
+} exti_handlers[NUM_EXTIINTERRUPTS];
 
-gpio_pin_t gpio_init(const gpio_id_t portpin) {
-    gpio_pin_t p = {.port = &gpio_ports[portpin >> 8], .pin = portpin & 0xFF};
-    return p;
-}
 
 void gpio_set_mode(const gpio_id_t portpin, moder_t mode)
 {
@@ -29,21 +37,81 @@ void gpio_set_mode(const gpio_id_t portpin, moder_t mode)
     gpio->MODER |= (mode<<(2*pin));
 }
 
+moder_t gpio_get_mode(const gpio_id_t portpin)
+{
+    uint16_t pin = portpin & 0xFF;
+    GPIO_typeDef *gpio = gpio_get_base_address(portpin);
+
+    return GET_BITS(gpio->MODER, 2*pin, 2);
+}
+
+void gpio_set_output_type(const gpio_id_t portpin, otype_t otype) {
+    uint16_t pin = portpin & 0xFF;
+    GPIO_typeDef *gpio = gpio_get_base_address(portpin);
+    gpio->OTYPER &= ~(1 << pin); //reset to zero
+    gpio->OTYPER |= (otype << pin);
+
+}
+
+uint16_t gpio_get_port(const gpio_id_t portpin)
+{
+    return (portpin >> 8);
+}
+
+void gpio_set_pupd(const gpio_id_t portpin, pupdr_t pupd)
+{
+    uint16_t pin = portpin & 0xFF;
+    GPIO_typeDef *gpio = gpio_get_base_address(portpin);
+
+    gpio->PUPDR &= ~(3<<(2*pin));
+    gpio->PUPDR |= (pupd<<(2*pin));
+}
+
+void gpio_set_alternate_function(const gpio_id_t portpin, afr_t af)
+{
+    uint16_t pin = portpin & 0xFF;
+    GPIO_typeDef *gpio = gpio_get_base_address(portpin);
+
+    if (pin < 8)
+    {
+        gpio->AFR[0] |= (af << (4*pin));
+    }
+    else
+    {
+        gpio->AFR[1] |= (af << (4*(pin-8)));
+    }
+}
 
 
-// __attribute__((always_inline)) void gpio_toggle(const gpio_pin_t *portpin)
-// {
-//     uint16_t pin = portpin->pin;
-//     GPIO_typeDef *gpio = (GPIO_typeDef *) portpin->port->regs;
-//     gpio->ODR ^= (1 << pin);
-// }
+void gpio_enable_interrupt(const gpio_id_t portpin, const edge_t evt) {
+    uint16_t pin = portpin & 0xFF;
+    uint16_t port = (portpin >> 8);
+    uint16_t shift = (pin%4)*4;
+    peripheral_exti_enable();
 
-static struct {
-    callbackfn_typeDef callback;
-} exti_handlers[NUM_EXTIINTERRUPTS];
+    // Initialize EXTI0 for interrupt on PB0(EXTIx = PINx)
+    SYSCFG->EXTICR[pin/4] &= ~(0xF << shift); // Clear settings
+    SYSCFG->EXTICR[pin/4] |= (port << shift);
+
+    EXTI->IMR1 |= BIT(pin); 		// Enable interrupt 0 (IM).
+    switch (evt) {
+        case FALLING_EDGE:
+            EXTI->FTSR1 |= BIT(pin);
+            break;
+        case RISING_EDGE:
+            EXTI->RTSR1 |= BIT(pin);
+            break;
+    }
+    interrupts_enable_source(extipin_to_irq[pin]);
+}
 
 void gpio_clear_interruptflag(uint8_t pin) {
     EXTI->PR1 |= BIT(pin);  // Clear pending bit
+}
+
+void gpio_interrupt_register_handler(const gpio_id_t portpin, callbackfn_typeDef fn) {
+    uint16_t pin = portpin & 0xFF;
+    exti_handlers[pin].callback =fn;
 }
 
 static void exti_dispatch(uint8_t exti_num)

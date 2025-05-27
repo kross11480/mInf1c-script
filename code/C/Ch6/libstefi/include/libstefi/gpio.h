@@ -17,22 +17,12 @@ enum _stefilite_ids
     C0 = 0x200, C1, C2, C3, C4, C5, C6, C7, C8, C9, C10, C11, C12, C13, C14, C15,
 };
 
-typedef struct gpio_port gpio_port_t; //Forward Declaration
-
-typedef struct gpio_pin {
-    gpio_port_t *port;
-    uint16_t pin;
-} gpio_pin_t;
-
 typedef enum {LOW, HIGH} sig_t;
 typedef enum {MODER_INPUT, MODER_OUTPUT, MODER_AF, MODER_ANALOG} moder_t;
 typedef enum {PUSH_PULL, OPEN_DRAIN} otype_t;
 typedef enum {NONE, PULL_UP, PULL_DOWN} pupdr_t;
 typedef enum {AFO, AF1, AF2, AF3, AF4, AF5, AF6, AF7, AF8, AF9, AF10, AF11, AF12, AF13, AF14, AF15,} afr_t;
 typedef enum {RISING_EDGE, FALLING_EDGE} edge_t;
-
-/* GPIO init */
-gpio_pin_t gpio_init(const gpio_id_t);
 
 /* GPIO initialization functions*/
 void gpio_set_mode(const gpio_id_t portpin, moder_t mode);
@@ -41,14 +31,28 @@ void gpio_set_pupd(const gpio_id_t portpin, pupdr_t pupd);
 void gpio_set_alternate_function(const gpio_id_t portpin, afr_t af);
 
 /* GPIO read, write, functions */
-void gpio_write(const gpio_id_t portpin, sig_t val);
-sig_t gpio_read(const gpio_id_t portpin);
-
 static inline GPIO_typeDef * gpio_get_base_address(const gpio_id_t portpin)
 {
     uint16_t port = (portpin >> 8);
     uint32_t baseoffset = port * GPIO_PORTOFFSET;
     return (GPIO_typeDef *) (GPIO_BASE +  baseoffset);
+}
+
+static inline sig_t gpio_read(const gpio_id_t portpin)
+{
+    uint16_t pin = portpin & 0xFF;
+    GPIO_typeDef *gpio = gpio_get_base_address(portpin);
+
+    return (gpio->IDR & (1<<pin) ? HIGH : LOW);
+}
+
+static inline void gpio_write(const gpio_id_t portpin, sig_t val)
+{
+    uint16_t pin = portpin & 0xFF;
+    GPIO_typeDef *gpio = gpio_get_base_address(portpin);
+
+    //low 16 bit odr high, upper 16 bit odr low
+    gpio->BSRR = (1 << pin)<<( val ? 0: 16);
 }
 
 static inline void gpio_toggle(const gpio_id_t portpin)
@@ -58,9 +62,6 @@ static inline void gpio_toggle(const gpio_id_t portpin)
 
     gpio->ODR ^= (1 << pin);
 }
-
-//void gpio_toggle(const gpio_id_t portpin);
-//void gpio_toggle(const gpio_pin_t *portpin);
 
 /* EXTI Functions(extended interrupts mapped to GPIO Pins)*/
 void gpio_enable_interrupt(const gpio_id_t, const edge_t);
