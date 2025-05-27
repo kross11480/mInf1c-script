@@ -8,6 +8,13 @@
 typedef enum _stefilite_ids gpio_id_t;
 typedef enum _stefi_exti_ids exti_id_t;
 
+typedef struct gpio_port gpio_port_t; //Forward Declaration
+
+typedef struct gpio_pin {
+    gpio_port_t *port;
+    uint16_t pin;
+} gpio_pin_t;
+
 typedef enum {LOW, HIGH} sig_t;
 typedef enum {MODER_INPUT, MODER_OUTPUT, MODER_AF, MODER_ANALOG} moder_t;
 typedef enum {PUSH_PULL, OPEN_DRAIN} otype_t;
@@ -15,14 +22,19 @@ typedef enum {NONE, PULL_UP, PULL_DOWN} pupdr_t;
 typedef enum {AFO, AF1, AF2, AF3, AF4, AF5, AF6, AF7, AF8, AF9, AF10, AF11, AF12, AF13, AF14, AF15,} afr_t;
 typedef enum {RISING_EDGE, FALLING_EDGE} edge_t;
 
-/* GPIO Functions*/
-void gpio_set_mode(const gpio_id_t portpin, moder_t mode);
+/* GPIO init */
+gpio_pin_t gpio_init(const gpio_id_t);
+
+/* GPIO initialization functions*/
+void gpio_set_mode(const gpio_pin_t *, moder_t mode);
 void gpio_set_output_type(const gpio_id_t portpin, otype_t otype);
 void gpio_set_pupd(const gpio_id_t portpin, pupdr_t pupd);
+void gpio_set_alternate_function(const gpio_id_t portpin, afr_t af);
+
+/* GPIO read, write, functions */
 void gpio_write(const gpio_id_t portpin, sig_t val);
 sig_t gpio_read(const gpio_id_t portpin);
-void gpio_toggle(const gpio_id_t portpin);
-void gpio_set_alternate_function(const gpio_id_t portpin, afr_t af);
+void gpio_toggle(const gpio_pin_t *);
 
 /* EXTI Functions(extended interrupts mapped to GPIO Pins)*/
 void gpio_enable_interrupt(const gpio_id_t, const edge_t);
