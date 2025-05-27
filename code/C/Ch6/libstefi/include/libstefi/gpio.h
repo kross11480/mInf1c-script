@@ -1,5 +1,4 @@
-#ifndef GPIO_H
-#define GPIO_H
+#pragma once
 
 #include <../src/internal/gpio_internal.h>
 
@@ -73,9 +72,5 @@ void gpio_interrupt_register_handler(const gpio_id_t portpin, callbackfn_typeDef
 /* For testing*/
 moder_t gpio_get_mode(const gpio_id_t portpin);
 uint16_t gpio_get_port(const gpio_id_t portpin);
-
-
-
-#endif
 
 

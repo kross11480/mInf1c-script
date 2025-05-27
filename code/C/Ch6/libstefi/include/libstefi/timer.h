@@ -1,8 +1,7 @@
 /*********************************************************************/
 /* Timer Hardware Abstraction layer*/
 /*********************************************************************/
-#ifndef TIMER_H
-#define TIMER_H
+#pragma once
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -46,7 +45,3 @@ void timer_change_period(tim_id_t tim, uint32_t period);
 
 void timer_init_pwm(tim_id_t tim, uint32_t channel, uint16_t prescaler, uint32_t period, uint32_t duty);
  */
-
-
-
-#endif

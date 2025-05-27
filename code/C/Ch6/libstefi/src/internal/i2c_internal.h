@@ -1,3 +1,5 @@
+#pragma once
+
 typedef struct
 {
     volatile uint32_t CR1;         /*!< I2C Control register 1,            Address offset: 0x00 */

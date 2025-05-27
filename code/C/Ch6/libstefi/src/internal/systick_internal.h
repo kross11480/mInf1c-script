@@ -1,3 +1,4 @@
+#pragma once
 #include "libstefi/board.h"
 #include <stdint.h>
 

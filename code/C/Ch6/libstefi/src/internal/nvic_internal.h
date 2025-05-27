@@ -1,7 +1,4 @@
-//NVIC: Check Pending Register
-//Functions
-#ifndef NVIC_INTERNAL_H
-#define NVIC_INTERNAL_H
+#pragma once
 #include <stdint.h>
 
 /** NVIC register map type. */
@@ -24,6 +21,3 @@ typedef struct {
 
 #define NVIC_GlobalEnable() do { __asm volatile("cpsie i"); } while (0)
 #define NVIC_GlobalDisable() do { __asm volatile("cpsid i"); } while(0)
-
-
-#endif
