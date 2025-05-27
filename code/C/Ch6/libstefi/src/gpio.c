@@ -20,20 +20,23 @@ gpio_pin_t gpio_init(const gpio_id_t portpin) {
     return p;
 }
 
-void gpio_set_mode(const gpio_pin_t *portpin, moder_t mode) {
-    uint16_t pin = portpin->pin;
-    GPIO_typeDef *gpio = (GPIO_typeDef *) portpin->port->regs;
+void gpio_set_mode(const gpio_id_t portpin, moder_t mode)
+{
+    uint16_t pin = portpin & 0xFF;
+    GPIO_typeDef *gpio = gpio_get_base_address(portpin);
+
     gpio->MODER &= ~(3<<(2*pin));
     gpio->MODER |= (mode<<(2*pin));
 }
 
-void gpio_toggle(const gpio_pin_t *portpin)
-{
-    uint16_t pin = portpin->pin;
-    GPIO_typeDef *gpio = (GPIO_typeDef *) portpin->port->regs;
 
-    gpio->ODR ^= (1 << pin);
-}
+
+// __attribute__((always_inline)) void gpio_toggle(const gpio_pin_t *portpin)
+// {
+//     uint16_t pin = portpin->pin;
+//     GPIO_typeDef *gpio = (GPIO_typeDef *) portpin->port->regs;
+//     gpio->ODR ^= (1 << pin);
+// }
 
 static struct {
     callbackfn_typeDef callback;

@@ -1,5 +1,8 @@
 #ifndef GPIO_H
 #define GPIO_H
+
+#include <../src/internal/gpio_internal.h>
+
 #include "interrupts.h"
 #include "stdint.h"
 /**********************************************************************/
@@ -7,6 +10,13 @@
 /**********************************************************************/
 typedef enum _stefilite_ids gpio_id_t;
 typedef enum _stefi_exti_ids exti_id_t;
+
+enum _stefilite_ids
+{
+    A0 = 0x000, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15,
+    B0 = 0x100, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15,
+    C0 = 0x200, C1, C2, C3, C4, C5, C6, C7, C8, C9, C10, C11, C12, C13, C14, C15,
+};
 
 typedef struct gpio_port gpio_port_t; //Forward Declaration
 
@@ -26,7 +36,7 @@ typedef enum {RISING_EDGE, FALLING_EDGE} edge_t;
 gpio_pin_t gpio_init(const gpio_id_t);
 
 /* GPIO initialization functions*/
-void gpio_set_mode(const gpio_pin_t *, moder_t mode);
+void gpio_set_mode(const gpio_id_t portpin, moder_t mode);
 void gpio_set_output_type(const gpio_id_t portpin, otype_t otype);
 void gpio_set_pupd(const gpio_id_t portpin, pupdr_t pupd);
 void gpio_set_alternate_function(const gpio_id_t portpin, afr_t af);
@@ -34,7 +44,24 @@ void gpio_set_alternate_function(const gpio_id_t portpin, afr_t af);
 /* GPIO read, write, functions */
 void gpio_write(const gpio_id_t portpin, sig_t val);
 sig_t gpio_read(const gpio_id_t portpin);
-void gpio_toggle(const gpio_pin_t *);
+
+static inline GPIO_typeDef * gpio_get_base_address(const gpio_id_t portpin)
+{
+    uint16_t port = (portpin >> 8);
+    uint32_t baseoffset = port * GPIO_PORTOFFSET;
+    return (GPIO_typeDef *) (GPIO_BASE +  baseoffset);
+}
+
+static inline void gpio_toggle(const gpio_id_t portpin)
+{
+    uint16_t pin = portpin & 0xFF;
+    GPIO_typeDef *gpio = gpio_get_base_address(portpin);
+
+    gpio->ODR ^= (1 << pin);
+}
+
+//void gpio_toggle(const gpio_id_t portpin);
+//void gpio_toggle(const gpio_pin_t *portpin);
 
 /* EXTI Functions(extended interrupts mapped to GPIO Pins)*/
 void gpio_enable_interrupt(const gpio_id_t, const edge_t);
@@ -47,12 +74,7 @@ void gpio_interrupt_register_handler(const gpio_id_t portpin, callbackfn_typeDef
 moder_t gpio_get_mode(const gpio_id_t portpin);
 uint16_t gpio_get_port(const gpio_id_t portpin);
 
-enum _stefilite_ids
-{
-    A0 = 0x000, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15,
-    B0 = 0x100, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15,
-    C0 = 0x200, C1, C2, C3, C4, C5, C6, C7, C8, C9, C10, C11, C12, C13, C14, C15,
-};
+
 
 #endif
 
