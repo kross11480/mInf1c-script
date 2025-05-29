@@ -12,6 +12,7 @@ add_library(libstefi
         src/uart.c
         src/startup.c
         src/syscalls.c
+        src/system.c
         src/board.c
         src/systick.c
         src/interrupts.c

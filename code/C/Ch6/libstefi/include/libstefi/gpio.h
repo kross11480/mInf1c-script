@@ -21,7 +21,7 @@ typedef enum {LOW, HIGH} sig_t;
 typedef enum {MODER_INPUT, MODER_OUTPUT, MODER_AF, MODER_ANALOG} moder_t;
 typedef enum {PUSH_PULL, OPEN_DRAIN} otype_t;
 typedef enum {NONE, PULL_UP, PULL_DOWN} pupdr_t;
-typedef enum {AFO, AF1, AF2, AF3, AF4, AF5, AF6, AF7, AF8, AF9, AF10, AF11, AF12, AF13, AF14, AF15,} afr_t;
+typedef enum {AF0, AF1, AF2, AF3, AF4, AF5, AF6, AF7, AF8, AF9, AF10, AF11, AF12, AF13, AF14, AF15,} afr_t;
 typedef enum {RISING_EDGE, FALLING_EDGE} edge_t;
 
 /* GPIO initialization functions*/
