@@ -68,3 +68,10 @@ void peripheral_i2c_enable(peripheral_id_i2c_t id)
     uint8_t pos = peripheral_i2c_dev[id-1].enable_bit;
     *peripheral_i2c_dev[id].rcc_reg |= BIT(pos);
 }
+
+void peripheral_rng_enable()
+{
+    RCC->AHB2ENR |= BIT(18);
+    //For L476, better set pll to 48 MHZ for portability
+    RCC->CCIPR |= (0x3 << 26);
+}

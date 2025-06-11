@@ -13,6 +13,7 @@ void peripheral_tim_enable(peripheral_id_tim_t);
 void peripheral_uart_enable(peripheral_id_uart_t);
 void peripheral_i2c_enable(peripheral_id_i2c_t id);
 void peripheral_exti_enable();
+void peripheral_rng_enable();
 
 enum peripheral_id_gpio {
     PERIPHERAL_ID_GPIOA,

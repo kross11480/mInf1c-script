@@ -18,6 +18,7 @@ add_library(libstefi
         src/interrupts.c
         src/timer.c
         src/i2c.c
+        src/rng.c
 )
 
 target_include_directories(libstefi PUBLIC include)
