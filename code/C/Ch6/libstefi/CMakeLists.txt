@@ -19,6 +19,7 @@ add_library(libstefi
         src/timer.c
         src/i2c.c
         src/rng.c
+        src/ringbuffer.c
 )
 
 target_include_directories(libstefi PUBLIC include)
