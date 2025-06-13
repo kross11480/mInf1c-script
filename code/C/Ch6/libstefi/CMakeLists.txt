@@ -13,7 +13,6 @@ add_library(libstefi
         src/startup.c
         src/syscalls.c
         src/system.c
-        src/board.c
         src/systick.c
         src/interrupts.c
         src/timer.c
@@ -45,8 +44,7 @@ add_subdirectories(${CMAKE_SOURCE_DIR}/examples)
 add_subdirectories(${CMAKE_SOURCE_DIR}/tests)
 # Add subdirectory for the lib
 add_subdirectory(libs/DisplayOLED)
+add_subdirectory(libs/SimpleIO)
 
-target_link_libraries(libstefi
-        PUBLIC
-        DisplayOLED
-)
+target_link_libraries(libstefi PUBLIC DisplayOLED)
+target_link_libraries(libstefi PUBLIC SimpleIO)
