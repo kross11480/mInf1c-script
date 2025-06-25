@@ -4,7 +4,6 @@
 #include <libstefi/uart.h>
 #include <libstefi/util.h>
 #include <libstefi/systick.h>
-#include <libstefi/rng.h>
 
 #include "stdint.h"
 #include "stdio.h"
@@ -89,17 +88,12 @@ void test_connection() {
 int main(void) {
     uart_configure();
 
-    rng_init();
     systick_init();
     systick_start();
     ssd1306_init();
     systick_delay_ms(100); //Wait for OLED to boot
 
     while(1) {
-        //test_display();
-        //test rng
-        uint32_t rnd = rng_get_rand();
-        printf("random number: %ld", rnd);
-        systick_delay_ms(1000);
+        test_display();
     }
 }

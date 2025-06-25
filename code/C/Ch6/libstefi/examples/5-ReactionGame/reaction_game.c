@@ -1,4 +1,5 @@
 #include <libstefi/rng.h>
+#include <libstefi/systick.h>
 #include <libstefi/timer.h>
 #include <libstefi/uart.h>
 
@@ -6,6 +7,7 @@
 #include "led.h"
 #include "button.h"
 #include "debounce.h"
+#include "ssd1306.h"
 
 #define TIMER_ID TIMER3
 
@@ -25,8 +27,13 @@ void s0_action() {
 }
 
 void s1_action() {
+    char buffer[10];
     led_off(LED0_RED);
-    printf("Reaction Time: %lu \r\n", timer_getcount(TIMER_ID));
+    ssd1306_clear_screen();
+    sprintf(buffer, "TIME: %4d", timer_getcount(TIMER_ID));
+    //printf("Time: %lu \r\n", timer_getcount(TIMER_ID));
+    ssd1306_putstring( 5, 0, buffer);
+    ssd1306_update_screen();
     timer_stop(TIMER_ID);
 }
 
@@ -59,6 +66,11 @@ void setup() {
     timer_set_period(TIMER_ID, 4000, 5000);
     timer_interrupt_register_handler(TIMER_ID, timer_expires);
     timer_enable_interrupt(TIMER_ID);
+
+    systick_init();
+    systick_start();
+    ssd1306_init();
+    systick_delay_ms(100); //Wait for OLED to boot
 }
 
 void main() {

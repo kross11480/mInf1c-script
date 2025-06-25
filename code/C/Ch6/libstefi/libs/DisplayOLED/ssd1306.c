@@ -12,12 +12,12 @@
 uint8_t SSD1306_Buffer[SSD1306_BUFFER_SIZE];
 
 static void ssd1306_write_cmd(uint8_t byte) {
-    //i2c_writeto_reg(I2C_ID, SSD1306_I2C_ADDR, 0x00, &byte, 1);
+    i2c_writeto_reg(I2C_ID, SSD1306_I2C_ADDR, 0x00, &byte, 1);
 
 }
 
 static void ssd1306_write_data(uint8_t* buffer, uint32_t buff_size) {
-    //i2c_writeto_reg(I2C_ID, SSD1306_I2C_ADDR, 0x40, buffer, buff_size);
+    i2c_writeto_reg(I2C_ID, SSD1306_I2C_ADDR, 0x40, buffer, buff_size);
 }
 
 static void ssd1306_write_cmd_list(uint8_t *buf, uint32_t num) {
@@ -75,9 +75,19 @@ void ssd1306_set_pixel(int x, int y, int on) {
     }
 }
 
+static inline uint32_t get_font_index(uint8_t ch) {
+    if (ch >= 'A' && ch <='Z') {
+        return  ch - 'A' + 1;
+    }
+    else if (ch >= '0' && ch <='9') {
+        return  ch - '0' + 27;
+    }
+    else return  0;
+}
+
 void ssd1306_putchar(uint32_t x, uint32_t y, uint8_t ch) {
     y = y/8;
-    uint32_t font_idx = (toupper(ch) + 1 - 'A')*8;
+    volatile uint32_t font_idx = get_font_index(toupper(ch))*8;
     uint32_t frame_buffer_idx = y*128 + x;
 
     for(uint32_t i = 0; i < 8; i++) {
