@@ -130,7 +130,7 @@ void timer_cc_enable(const tim_id_t timer_id, uint32_t channel)
     assert(timer_id > 0);
     TIM_t *tim = timers[timer_id];
     uint8_t shift;
-    uint8_t polarity = 1; //
+    volatile uint8_t polarity = 1; //
 
     switch(channel) {
         case 1:
@@ -155,6 +155,10 @@ void timer_cc_enable(const tim_id_t timer_id, uint32_t channel)
             break;
         default:
             break;
+    }
+
+    if(timer_id == 1 || timer_id == 8) {
+        tim->BDTR |= BIT(15); //Master Output Enable
     }
     // Enable auto-reload preload & UPDATE GENERATION
     tim->CR1 |= BIT(7); // ARPE
