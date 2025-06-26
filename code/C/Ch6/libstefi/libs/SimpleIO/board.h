@@ -1,5 +1,6 @@
 #pragma once
 #include "libstefi/gpio.h"
+#include "libstefi/timer.h"
 
 typedef enum {
     LED0_RED = 0,
@@ -20,7 +21,10 @@ typedef enum {
 typedef struct {
     gpio_id_t portpin;
     sig_t off_state;
-} led_config_t;
+    tim_id_t timer_id;
+    uint32_t channel;
+    afr_t af_mode;
+}  led_config_t;
 
 //Button Confguration
 typedef struct {

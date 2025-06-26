@@ -11,8 +11,8 @@ button_config_t buttons[NUM_BUTTONS] = {
 led_config_t leds[NUM_LEDS] = {
     [LED0_RED] = {C4, HIGH},
     [LED1_YELLOW] = {C5, HIGH},
-    [LED2_GREEN] = {C6, HIGH},
-    [LED3_BLUE] = {C7, HIGH},
+    [LED2_GREEN] = {C6, HIGH, TIMER3, 1, AF2},
+    [LED3_BLUE] = {C7, HIGH, TIMER3, 2, AF2},
 };
 
 
