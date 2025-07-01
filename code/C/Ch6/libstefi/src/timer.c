@@ -82,6 +82,7 @@ void timer_set_period(const tim_id_t timer_id, uint16_t prescaler, uint32_t peri
     tim->PSC = prescaler - 1; //Set prescaler
     tim->ARR = period; //Set period
     tim->CNT = 0;
+    tim->EGR |= BIT(0);  // Load new ARR immediately
 }
 
 void timer_set_mode_pwm(const tim_id_t timer_id, uint32_t channel)
@@ -100,6 +101,31 @@ void timer_set_mode_pwm(const tim_id_t timer_id, uint32_t channel)
         tim->CCMR2 |= BIT(3) << shift; // Output compare 2 preload enable}
     }
 }
+
+void timer_set_mode_ic(const tim_id_t timer_id, uint32_t channel)
+{
+    assert(timer_id > 0);
+    TIM_t *tim = timers[timer_id];
+    tim->PSC = 0;
+    tim->ARR = 0xFFFF;
+    tim->CR1 |= BIT(7); // ARPE: enable shadow registers of ARR
+
+    uint8_t shift = (channel & 1) ? 0 : 8;
+    //set mode
+    if (channel == 1 || channel == 2) {
+        tim->CCMR1 &= ~(3 << shift);
+        tim->CCMR1 |= 1 << shift; // CC1 or 2 configured as input, IC1,2 mapped on TI1,2
+        tim->CCMR1 &= ~(0xF << (shift+4)); //reset input capture filter
+        tim->CCMR1 |= (0x1 << (shift+4)); //0b0001: fSAMPLING=fCK_INT, N=2 consective event validate a transition
+    } else {
+        tim->CCMR2 &= ~(3 << shift);
+        tim->CCMR2 |= 1 << shift; // CC3 or 4 configured as input, IC3,4 mapped on TI3,4
+        tim->CCMR2 &= ~(0xF << (shift+4)); //reset input capture filter
+        tim->CCMR2 |= (0x1 << (shift+4)); //0b0001: fSAMPLING=fCK_INT, N=2 consective event validate a transition
+    }
+
+}
+
 
 void timer_set_compare(const tim_id_t timer_id, uint32_t channel, uint32_t duty)
 {
@@ -125,47 +151,26 @@ void timer_set_compare(const tim_id_t timer_id, uint32_t channel, uint32_t duty)
         }
 }
 
-void timer_cc_enable(const tim_id_t timer_id, uint32_t channel)
-{
+static void timer_set_cc_io(const tim_id_t timer_id, uint32_t channel, bool is_input, uint8_t shift) {
     assert(timer_id > 0);
     TIM_t *tim = timers[timer_id];
-    uint8_t shift;
-    volatile uint8_t polarity = 1; //
-
-    switch(channel) {
-        case 1:
-            shift = 0;
-            tim->CCER |= polarity << (shift + 1);    // OC signal is active low
-            tim->CCER |= BIT(0) << (shift); //OC is output
-            break;
-        case 2:
-            shift = 4;
-            tim->CCER |= polarity << (shift + 1);    // OC signal is active low
-            tim->CCER |= BIT(0) << (shift); //OC is output
-            break;
-        case 3:
-            shift = 8;
-            tim->CCER |= polarity << (shift + 1);    // OC signal is active low
-            tim->CCER |= BIT(0) << (shift); //OC is output
-            break;
-        case 4:
-            shift = 12;
-            tim->CCER |= polarity << (shift + 1);    // OC signal is active low
-            tim->CCER |= BIT(0) << (shift); //OC is output
-            break;
-        default:
-            break;
+    volatile uint8_t polarity = 1;
+    if(is_input) {
+        // CC1NP=0, CC1P=0: sensitive to rising edge
+        tim->CCER &= ~(0x1 << (shift + 1)| 0x1  << (shift+3));
+        // enable capture from counter in capture register
+        tim->CCER |= BIT(shift); //enable input
+        tim->DIER |= BIT(channel); // enable cc1 interrupt generation
+    } else {
+        tim->CCER |= polarity << (shift + 1);  // OC signal is active low
+        tim->CCER |= BIT(shift); //enable output
+        if(timer_id == 1 || timer_id == 8) {
+            tim->BDTR |= BIT(15); //Master Output Enable
+        }
     }
-
-    if(timer_id == 1 || timer_id == 8) {
-        tim->BDTR |= BIT(15); //Master Output Enable
-    }
-    // Enable auto-reload preload & UPDATE GENERATION
-    tim->CR1 |= BIT(7); // ARPE
-    tim->EGR |= BIT(0); // UG: update registers
 }
-/*******Interrupts*****************/
 
+/*******Interrupts*****************/
 static inline void timer_clear_interruptflag(const tim_id_t timer_id)
 {
     assert(timer_id > 0);
@@ -199,7 +204,38 @@ void timer_enable_interrupt(const tim_id_t timer_id)
     interrupts_enable_source(timerid_to_irq[timer_id]);
 }
 
+void timer_cc_enable(const tim_id_t timer_id, uint32_t channel, bool is_input)
+{
+    assert(timer_id > 0);
+    TIM_t *tim = timers[timer_id];
+    uint8_t shift;
 
+    switch(channel) {
+        case 1:
+            shift = 0;
+        timer_set_cc_io(timer_id, channel, is_input, shift);
+        break;
+        case 2:
+            shift = 4;
+        timer_set_cc_io(timer_id, channel, is_input, shift);
+        break;
+        case 3:
+            shift = 8;
+        timer_set_cc_io(timer_id, channel, is_input, shift);
+        break;
+        case 4:
+            shift = 12;
+        timer_set_cc_io(timer_id, channel, is_input, shift);
+        break;
+        default:
+            break;
+    }
+
+    tim->CR1 |= BIT(7); // ARPE: Enable auto-reload preload & UPDATE GENERATION
+    tim->EGR |= BIT(0); //reset timer: preloads the shadow registers
+    timer_clear_interruptflag(timer_id);
+    interrupts_enable_source(timerid_to_irq[timer_id]);
+}
 
 void TIM2_IRQHandler(void) {handle_timer_irq(TIMER2);}
 void TIM3_IRQHandler(void) {handle_timer_irq(TIMER3);}

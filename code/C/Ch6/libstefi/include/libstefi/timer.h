@@ -33,9 +33,9 @@ void timer_setcount(const tim_id_t, uint32_t cnt);
 void timer_set_period(const tim_id_t timer, uint16_t prescaler, uint32_t period);
 
 void timer_set_mode_pwm(const tim_id_t timer_id, uint32_t channel);
+void timer_set_mode_ic(const tim_id_t timer_id, uint32_t channel);
 void timer_set_compare(const tim_id_t timer_id, uint32_t channel, uint32_t duty);
-void timer_cc_enable(const tim_id_t timer_id, uint32_t channel);
-
+void timer_cc_enable(const tim_id_t timer_id, uint32_t channel, bool is_input);
 void timer_enable_interrupt(const tim_id_t);
 void timer_disable_interrupt(const tim_id_t);
 void timer_interrupt_register_handler(const tim_id_t timer_id, callbackfn_typeDef fn);

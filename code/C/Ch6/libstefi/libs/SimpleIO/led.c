@@ -19,7 +19,7 @@ void led_init(stefi_led_t id, pin_mode mode) {
             timer_init(leds[id].timer_id);
             timer_set_period(leds[id].timer_id, 16, 255); //PWM Freq=4 MhZ/(16*256) = 1 KHZ
             timer_set_mode_pwm(leds[id].timer_id, leds[id].channel);
-            timer_cc_enable(leds[id].timer_id, leds[id].channel);
+            timer_cc_enable(leds[id].timer_id, leds[id].channel, false);
             timer_set_compare(leds[id].timer_id, leds[id].channel, 0);
             timer_start(leds[id].timer_id);
             break;
