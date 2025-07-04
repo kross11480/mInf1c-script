@@ -60,7 +60,7 @@ void setup() {
     button_init(BUTTON_S1);
     button_interrupt_init(BUTTON_S1, s1_callback);
     //initialize led
-    led_init(LED0_RED);
+    led_init(LED0_RED, OUTPUT);
     //initialize reaction timer
     timer_init(TIMER_ID);
     timer_set_period(TIMER_ID, 4000, 5000);

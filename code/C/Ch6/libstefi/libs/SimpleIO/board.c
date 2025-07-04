@@ -1,6 +1,5 @@
 #include "board.h"
 
-
 button_config_t buttons[NUM_BUTTONS] = {
     [BUTTON_S0] = {B0, PULL_UP},
     [BUTTON_S1] = {B1, PULL_UP},

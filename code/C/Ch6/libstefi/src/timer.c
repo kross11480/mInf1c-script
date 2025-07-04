@@ -31,8 +31,9 @@ static const enum _nvic_interrupt_sources timerid_to_irq[19] = {
 };
 
 static struct {
-    callbackfn_typeDef callback;
-} timer_handlers[NUM_TIMERINTERRUPTS];
+    callbackfn_typeDef callback[TIMER_IRQ_MAX];
+    void *aux_data;
+} timer_handlers[NUM_TIMERINTERRUPTS] = {0};
 
 void timer_init(const tim_id_t timer_id) {
     //ASSERT(timer_id > 0);
@@ -63,6 +64,28 @@ uint32_t timer_getcount(const tim_id_t timer_id)
     TIM_t *tim = timers[timer_id];
 
     return tim->CNT;
+}
+
+uint32_t timer_get_arr(const tim_id_t timer_id) {
+    assert(timer_id > 0);
+    TIM_t *tim = timers[timer_id];
+
+    return tim->ARR;
+}
+
+uint32_t timer_get_compare(const tim_id_t timer_id, uint8_t channel)
+{
+    assert(timer_id > 0);
+    TIM_t *tim = timers[timer_id];
+    uint32_t val = 0;
+    switch(channel) {
+        case 1: val = tim->CCR1; break;
+        case 2: val = tim->CCR2; break;
+        case 3: val = tim->CCR3; break;
+        case 4: val = tim->CCR4; break;
+        default: break;
+    }
+    return val;
 }
 
 void timer_setcount(const tim_id_t timer_id, uint32_t cnt)
@@ -126,7 +149,6 @@ void timer_set_mode_ic(const tim_id_t timer_id, uint32_t channel)
 
 }
 
-
 void timer_set_compare(const tim_id_t timer_id, uint32_t channel, uint32_t duty)
 {
     assert(timer_id > 0);
@@ -171,25 +193,64 @@ static void timer_set_cc_io(const tim_id_t timer_id, uint32_t channel, bool is_i
 }
 
 /*******Interrupts*****************/
-static inline void timer_clear_interruptflag(const tim_id_t timer_id)
+void timer_interrupt_register_handler(const tim_id_t timer_id, callbackfn_typeDef fn) {
+    timer_handlers[timer_id].callback[TIMER_UPDATE_IRQ] = fn;
+}
+
+void timer_cc_interrupt_register_handler(const tim_id_t timer_id, timer_interrupt_t channel, callbackfn_typeDef fn) {
+    timer_handlers[timer_id].callback[channel] = fn;
+}
+
+static void timer_dispatch(const tim_id_t timer_id, const timer_interrupt_t irq_type)
 {
+    timer_handlers[timer_id].callback[irq_type]();
+}
+
+static inline void timer_clear_interruptflag(const tim_id_t timer_id) {
     assert(timer_id > 0);
     TIM_t *tim = timers[timer_id];
-    tim->SR &= ~BIT(0);
-}
-
-void timer_interrupt_register_handler(const tim_id_t timer_id, callbackfn_typeDef fn) {
-    timer_handlers[timer_id].callback = fn;
-}
-
-static void timer_dispatch(const tim_id_t timer_id)
-{
-    timer_handlers[timer_id].callback();
+    uint32_t interrupt_flag = tim->SR;
+    if ((interrupt_flag & BIT(0)) && timer_handlers[timer_id].callback[TIMER_UPDATE_IRQ]) {
+        tim->SR &= ~BIT(0);
+    }
+    if ((interrupt_flag & BIT(1)) && timer_handlers[timer_id].callback[TIMER_CC1_IRQ]) {
+        tim->SR &= ~BIT(1);
+    }
+    if ((interrupt_flag & BIT(2)) && timer_handlers[timer_id].callback[TIMER_CC2_IRQ]) {
+        tim->SR &= ~BIT(2);
+    }
+    if ((interrupt_flag & BIT(3)) && timer_handlers[timer_id].callback[TIMER_CC3_IRQ]) {
+        tim->SR &= ~BIT(3);
+    }
+    if ((interrupt_flag & BIT(4)) && timer_handlers[timer_id].callback[TIMER_CC4_IRQ]) {
+        tim->SR &= ~BIT(4);
+    }
 }
 
 static inline void handle_timer_irq(const tim_id_t timer_id) {
-    timer_clear_interruptflag(timer_id);
-    timer_dispatch(timer_id);
+    assert(timer_id > 0);
+    TIM_t *tim = timers[timer_id];
+    uint32_t interrupt_flag = tim->SR;
+    if ((interrupt_flag & BIT(0)) && timer_handlers[timer_id].callback[TIMER_UPDATE_IRQ]) {
+        tim->SR &= ~BIT(0);
+        timer_dispatch(timer_id, 0);
+    }
+    if ((interrupt_flag & BIT(1)) && timer_handlers[timer_id].callback[TIMER_CC1_IRQ]) {
+        tim->SR &= ~BIT(1);
+        timer_dispatch(timer_id, 1);
+    }
+    if ((interrupt_flag & BIT(2)) && timer_handlers[timer_id].callback[TIMER_CC2_IRQ]) {
+        tim->SR &= ~BIT(2);
+        timer_dispatch(timer_id, 2);
+    }
+    if ((interrupt_flag & BIT(3)) && timer_handlers[timer_id].callback[TIMER_CC3_IRQ]) {
+        tim->SR &= ~BIT(3);
+        timer_dispatch(timer_id, 3);
+    }
+    if ((interrupt_flag & BIT(4)) && timer_handlers[timer_id].callback[TIMER_CC4_IRQ]) {
+        tim->SR &= ~BIT(4);
+        timer_dispatch(timer_id, 4);
+    }
 }
 
 void timer_enable_interrupt(const tim_id_t timer_id)

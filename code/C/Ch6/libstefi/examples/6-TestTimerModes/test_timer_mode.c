@@ -16,7 +16,8 @@
 #define CAPTURE_PIN C9 //OC2: Pin 8 on J1
 
 volatile uint16_t ticks;
-volatile uint8_t captureActive = 0;
+const int capture_timer = TIMER3;
+const uint8_t capture_channel = 4;
 
 void setup_fadinglights() {
     led_init(LED, PWM);
@@ -47,8 +48,7 @@ void timer_callback()
 void capture_callback()
 {
     static uint16_t last_capture_value = 0, current_capture_value = 0;
-    TIM3->SR &= ~BIT(4);
-    current_capture_value = TIM3->CCR4;
+    current_capture_value = timer_get_compare(capture_timer, capture_channel);
 
     if(last_capture_value < current_capture_value)
     {
@@ -56,7 +56,7 @@ void capture_callback()
     }
     else
     {
-        ticks = (TIM3->ARR - last_capture_value) + current_capture_value;
+        ticks = (timer_get_arr(capture_timer) - last_capture_value) + current_capture_value;
     }
     last_capture_value = current_capture_value;
 }
@@ -75,11 +75,12 @@ void setup() {
     //Setup Timer3 to capture input on C9
     gpio_set_mode(C9, MODER_AF);
     gpio_set_alternate_function(C9, AF2);
-    timer_init(TIMER3);
-    timer_set_mode_ic(TIMER3, 4);
-    timer_interrupt_register_handler(TIMER3, capture_callback);
-    timer_cc_enable(TIMER3, 4, true);
-    timer_start(TIMER3);
+
+    timer_init(capture_timer);
+    timer_set_mode_ic(capture_timer, capture_channel);
+    timer_cc_interrupt_register_handler(capture_timer, capture_channel, capture_callback);
+    timer_cc_enable(capture_timer, capture_channel, true);
+    timer_start(capture_timer);
 }
 
 void main() {
@@ -90,6 +91,6 @@ void main() {
     setup();
 
     while(1) {
-        //printf("Ticks:%d \r\n", 4000000/ticks);
+        printf("Ticks:%d \r\n", 4000000/ticks);
     }
 }
