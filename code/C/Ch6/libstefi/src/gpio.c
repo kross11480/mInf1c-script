@@ -50,7 +50,13 @@ void gpio_set_output_type(const gpio_id_t portpin, otype_t otype) {
     GPIO_typeDef *gpio = gpio_get_base_address(portpin);
     gpio->OTYPER &= ~(1 << pin); //reset to zero
     gpio->OTYPER |= (otype << pin);
+}
 
+void gpio_set_output_speed(const gpio_id_t portpin, ospeed_t ospeed) {
+    uint16_t pin = portpin & 0xFF;
+    GPIO_typeDef *gpio = gpio_get_base_address(portpin);
+    gpio->OSPEEDR &= ~(3 << (2*pin)); //reset to zero
+    gpio->OSPEEDR |= (ospeed << (2*pin));
 }
 
 uint16_t gpio_get_port(const gpio_id_t portpin)

@@ -39,6 +39,12 @@ static const peripheral_dev_t peripheral_i2c_dev[PERIPHERAL_I2C_COUNT] = {
     [PERIPHERAL_ID_I2C3] = {&RCC->APB1ENR1, 23},
 };
 
+static const peripheral_dev_t peripheral_spi_dev[PERIPHERAL_SPI_COUNT] = {
+    [PERIPHERAL_ID_SPI1] = {&RCC->APB2ENR, 12},
+    [PERIPHERAL_ID_SPI2] = {&RCC->APB1ENR1, 14},
+    [PERIPHERAL_ID_SPI3] = {&RCC->APB1ENR1, 15},
+};
+
 void peripheral_gpio_enable(peripheral_id_gpio_t id)
 {
     uint8_t pos = peripheral_gpio_dev[id].enable_bit;
@@ -74,4 +80,10 @@ void peripheral_rng_enable()
     RCC->AHB2ENR |= BIT(18);
     //For L476, better set pll to 48 MHZ for portability
     RCC->CCIPR |= (0x3 << 26);
+}
+
+void peripheral_spi_enable(peripheral_id_spi_t id)
+{
+    uint8_t pos = peripheral_spi_dev[id].enable_bit;
+    *peripheral_spi_dev[id].rcc_reg |= BIT(pos);
 }
