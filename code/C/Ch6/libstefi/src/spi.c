@@ -32,10 +32,14 @@ void spi_init(const peripheral_id_spi_t spi_id, gpio_id_t cs_pin, gpio_id_t sck_
     gpio_set_output_speed(miso_pin, HIGH_S);
     gpio_set_output_speed(mosi_pin, HIGH_S);
 
+    gpio_set_mode(A4, MODER_OUTPUT);
+
     SPI_t *spi = spi_peripherals[spi_id];
     spi->CR1 |= BIT(4); //bitrate = clock/8
     spi->CR1 |= BIT(2); //Master Mode
     spi->CR1 |= BIT(8) | BIT(9);// Software NSS, set SSI
+
+    spi->CR2 |= BIT(12);
     spi->CR1 |= BIT(6);   // SPI enable
 }
 
@@ -43,11 +47,13 @@ uint8_t spi_transfer(const peripheral_id_spi_t spi_id, uint8_t data) {
     assert(spi_id >= 0);
     SPI_t *spi = spi_peripherals[spi_id];
 
+    uint8_t rx_data;
     // Wait until TX buffer is empty
     while (!( spi->SR & BIT(1) ));
-    spi->DR = data; // Send data
+    *(uint8_t *)&(spi->DR) = data;
 
     // Wait until RX buffer is not empty
     while (!(spi->SR & BIT(0)));
-    return spi->DR; // Return received data
+    rx_data = (uint8_t)spi->DR;
+    return rx_data; // Return received data
 }
