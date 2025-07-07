@@ -31,6 +31,7 @@ void gpio_set_output_type(const gpio_id_t portpin, otype_t otype);
 void gpio_set_output_speed(const gpio_id_t portpin, ospeed_t ospeed);
 void gpio_set_pupd(const gpio_id_t portpin, pupdr_t pupd);
 void gpio_set_alternate_function(const gpio_id_t portpin, afr_t af);
+void gpio_set_analog_switch(const gpio_id_t portpin);
 
 /* GPIO read, write, functions */
 static inline GPIO_typeDef * gpio_get_base_address(const gpio_id_t portpin)

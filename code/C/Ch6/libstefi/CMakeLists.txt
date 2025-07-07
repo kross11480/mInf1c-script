@@ -20,6 +20,7 @@ add_library(libstefi
         src/rng.c
         src/ringbuffer.c
         src/spi.c
+        src/adc.c
 )
 
 target_include_directories(libstefi PUBLIC include)

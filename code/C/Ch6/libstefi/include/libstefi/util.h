@@ -8,6 +8,7 @@
 #define GET_BITS(value, pos, num_bits) ( (value >> pos) & ((1U << num_bits) - 1) )
 #define countof(array) sizeof(array)/sizeof(array[0])
 void soft_delay_ms(uint32_t time_in_ms);
+void soft_delay_us(uint32_t time_in_us);
 
 
 #define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1: __FILE__ )

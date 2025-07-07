@@ -59,6 +59,12 @@ void gpio_set_output_speed(const gpio_id_t portpin, ospeed_t ospeed) {
     gpio->OSPEEDR |= (ospeed << (2*pin));
 }
 
+void gpio_set_analog_switch(const gpio_id_t portpin) {
+    uint16_t pin = portpin & 0xFF;
+    GPIO_typeDef *gpio = gpio_get_base_address(portpin);
+    gpio->ASCR |= BIT(pin);
+}
+
 uint16_t gpio_get_port(const gpio_id_t portpin)
 {
     return (portpin >> 8);

@@ -12,6 +12,10 @@ typedef struct {
     volatile uint32_t BSRR;     // 0x18: GPIO bit set/reset register
     volatile uint32_t LCKR;     // 0x1C: GPIO lock register
     volatile uint32_t AFR[2];   // 0x20: GPIO alternate function registers
+    volatile uint32_t BRR;         /*!< GPIO Bit Reset register,               Address offset: 0x28      */
+    volatile uint32_t ASCR;        /*!< GPIO analog switch control register,   Address offset: 0x2C     */
+
+
 } GPIO_typeDef;
 
 #define GPIO_BASE (0x48000000)

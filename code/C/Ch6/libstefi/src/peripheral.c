@@ -45,6 +45,12 @@ static const peripheral_dev_t peripheral_spi_dev[PERIPHERAL_SPI_COUNT] = {
     [PERIPHERAL_ID_SPI3] = {&RCC->APB1ENR1, 15},
 };
 
+static const peripheral_dev_t peripheral_adc_dev[PERIPHERAL_ADC_COUNT] = {
+    [PERIPHERAL_ID_ADC1] = {&RCC->AHB2ENR, 13},
+    [PERIPHERAL_ID_ADC2] = {&RCC->AHB2ENR, 13},
+    [PERIPHERAL_ID_ADC3] = {&RCC->AHB2ENR, 13},
+};
+
 void peripheral_gpio_enable(peripheral_id_gpio_t id)
 {
     uint8_t pos = peripheral_gpio_dev[id].enable_bit;
@@ -86,4 +92,10 @@ void peripheral_spi_enable(peripheral_id_spi_t id)
 {
     uint8_t pos = peripheral_spi_dev[id].enable_bit;
     *peripheral_spi_dev[id].rcc_reg |= BIT(pos);
+}
+
+void peripheral_adc_enable(peripheral_id_adc_t id)
+{
+    uint8_t pos = peripheral_adc_dev[id].enable_bit;
+    *peripheral_adc_dev[id].rcc_reg |= BIT(pos);
 }
