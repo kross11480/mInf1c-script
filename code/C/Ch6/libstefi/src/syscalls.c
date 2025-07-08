@@ -29,7 +29,23 @@ void _fstat(int fd, struct stat *st) {
 void _close(int fd) {}
 void _isatty(int fd) {}
 void _lseek(int fd, int ptr, int dir) {}
-void _read(int fd, char *ptr, int len) {}
+int _read(int fd, char *ptr, int len) {
+    for (int i = 0; i < len; i++) {
+        char c = uart_getchar();
+        uart_putchar(c);
+        if(c == '\r') {
+            *ptr= '\n';
+            ptr++;
+            uart_putchar('\n');
+            return i + 1;
+        } else {
+            *ptr = c;
+            ptr++;
+        }
+    }
+    return len;
+}
+
 void _kill(int pid, int sig) {}
 void _getpid(void) {}
 

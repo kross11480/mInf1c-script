@@ -47,7 +47,11 @@ void uart_putchar(char ch) {
     uart_poll_out(&ch, 1);
 }
 
-//This is bloking and not polling, change name
+char uart_getchar() {
+    return uart_poll_in();
+}
+
+//This is blocking and not polling, change name
 unsigned char uart_poll_in()
 {
     /* Check if uart is initialized */
