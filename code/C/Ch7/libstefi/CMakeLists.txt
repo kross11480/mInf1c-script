@@ -1,10 +1,9 @@
 cmake_minimum_required(VERSION 3.24)
+
 include(${CMAKE_SOURCE_DIR}/cmake/toolchain-arm.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/target-mcu.cmake)
-
 # project settings
-project(examples C ASM)
-set(CMAKE_C_STANDARD 11)
+#project(examples C ASM)
 
 add_library(libstefi
         src/gpio.c
