@@ -1,0 +1,3 @@
+[submodule "code/C/Ch8/libstefi"]
+	path = code/C/Ch8/libstefi
+	url = https://github.com/THN-mInfC/stefi-lib.git
