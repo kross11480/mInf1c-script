@@ -1,61 +1,91 @@
-#include <libstefi/timer.h>
+#include <libstefi/uart.h>
 #include <libstefi/util.h>
 
 #include "libstefi/gpio.h"
 #include "libstefi/peripheral.h"
+#include <libstefi/systick.h>
+#include "libstefi/timer.h"
 
-/* Sensor: RGB Module */
-/* Demo: Connect VCC-3.3 V, GND, and RED, GREEN, BLUE -> Pin A0 on CN7 */
-/* Function: pwm driven rgb, red does not work in smd rgb led */
+/* Sensor: Ultrasound  */
+/* Demo: Connect VCC-3.3 V, GND */
+/* Function: pulse out, pulseIn length (Timer Capture) proportional to distance  */
 
-#define USER_LED A5
-#define RED_RGBLED_PIN A7 //D11 {A7, TIMER3, 2, AF2}, D6{B10, TIM2, 3, AF1}
-#define GREEN_RGBLED_PIN B6 //D10 {B6, TIM4, 1, AF2}, D5 {B4, TIM3, 1, AF2}
-#define BLUE_RGBLED_PIN B3 // D3 {B3, TIM2, 2, AF1}, D9 {C7, TIM3, 2, AF2},
+#define USER_LED B8
+#define US_IN_PIN B7 //echo
+#define US_OUT_PIN B0
+
+volatile uint16_t ticks = 0;
+uint16_t trigger = 0;
+const int capture_timer = TIMER3;
+const uint8_t capture_channel = TIMER_CHANNEL4;
+
+static enum { WAIT_FOR_RISING, WAIT_FOR_FALLING } state = WAIT_FOR_RISING;
+static uint16_t rising = 0, falling = 0;
+
+/* Sensor: Line Tracking Module */
+/* Demo: Connect VCC-3.3 V, GND, and S -> Pin A15, PB6 on CN4 */
+/* Function: USER LED (A5) lights up on white surface, and off on black area*/
+
+#define TRACKING_SENSOR1_PIN A15
+#define TRACKING_SENSOR2_PIN B6
+
+void capture_callback()
+{
+    uint16_t current_capture_value = 0;
+    current_capture_value = timer_get_compare(capture_timer, capture_channel);
+
+    if (state == WAIT_FOR_RISING) {
+        rising = current_capture_value;
+        timer_set_ic_edge(capture_timer, capture_channel, TIMER_EDGE_FALLING);
+        state = WAIT_FOR_FALLING;
+    } else {
+        falling = current_capture_value;
+        if (falling >= rising)
+            ticks = falling - rising;
+        else
+            ticks = (timer_get_arr(capture_timer) - rising + falling);
+        timer_set_ic_edge(capture_timer, capture_channel, TIMER_EDGE_RISING);
+        state = WAIT_FOR_RISING;
+        trigger = 0;
+    }
+}
 
 void main(){
+    uart_configure();
+
     peripheral_gpio_enable(PERIPHERAL_GPIOA);
     peripheral_gpio_enable(PERIPHERAL_GPIOB);
-    gpio_set_mode(USER_LED, MODER_OUTPUT);
+    peripheral_gpio_enable(PERIPHERAL_GPIOC);
 
-    gpio_set_mode(RED_RGBLED_PIN, MODER_AF);
-    gpio_set_mode(GREEN_RGBLED_PIN, MODER_AF);
-    gpio_set_mode(BLUE_RGBLED_PIN, MODER_AF);
+    //Trigger (10us) on out ping
+    gpio_set_mode(US_OUT_PIN, MODER_OUTPUT);
 
-    gpio_set_alternate_function(RED_RGBLED_PIN, AF2);
-    gpio_set_alternate_function(GREEN_RGBLED_PIN, AF2);
-    gpio_set_alternate_function(BLUE_RGBLED_PIN, AF1);
+    //Setup Timer3 to capture input
+    gpio_set_mode(US_IN_PIN, MODER_AF);
+    gpio_set_alternate_function(US_IN_PIN, AF10);
 
-    timer_init(TIMER3);
-    timer_init(TIMER4);
-    timer_init(TIMER2);
+    timer_init(capture_timer);
+    timer_set_mode_ic(capture_timer, capture_channel);
+    timer_cc_interrupt_register_handler(capture_timer, capture_channel, capture_callback);
+    timer_cc_enable(capture_timer, capture_channel, true);
+    timer_start(capture_timer);
 
-    timer_set_period(TIMER3, 16, 255); //1000 Hz-PWM
-    timer_set_period(TIMER4, 16, 255);
-    timer_set_period(TIMER2, 16, 255);
-
-    timer_set_mode_pwm(TIMER3, TIMER_CHANNEL2);
-    timer_set_mode_pwm(TIMER4, TIMER_CHANNEL1);
-    timer_set_mode_pwm(TIMER2, TIMER_CHANNEL2);
-
-    timer_cc_enable(TIMER3, TIMER_CHANNEL2, false);
-    timer_cc_enable(TIMER4, TIMER_CHANNEL1, false);
-    timer_cc_enable(TIMER2, TIMER_CHANNEL2, false);
-
-    timer_set_compare(TIMER3, TIMER_CHANNEL2, 1);
-    timer_set_compare(TIMER4, TIMER_CHANNEL1, 1);
-    timer_set_compare(TIMER2, TIMER_CHANNEL2, 1);
-
-    timer_start(TIMER3);
-    timer_start(TIMER4);
-    timer_start(TIMER2);
+    gpio_set_mode(TRACKING_SENSOR1_PIN, MODER_INPUT);
+    gpio_set_mode(TRACKING_SENSOR2_PIN, MODER_INPUT);
 
     while(1) {
-        for(uint32_t val = 0; val <  255; val++) {
-            timer_set_compare(TIMER3, TIMER_CHANNEL2, 255);
-            timer_set_compare(TIMER4, TIMER_CHANNEL1, 128);
-            timer_set_compare(TIMER2, TIMER_CHANNEL2,256);
-            soft_delay_ms(50);
+        //send pulse every 0.5s
+        gpio_write(US_OUT_PIN, LOW); soft_delay_us(8);
+        gpio_write(US_OUT_PIN, HIGH); soft_delay_us(80);
+        gpio_write(US_OUT_PIN, LOW);
+        trigger = 1;
+        soft_delay_ms(200);
+        if(trigger == 0) {
+            //Factor: 0.125 as CPU Clock: 4MHz + round trip time
+            printf("S1: %d, S2: %d, Distance: %.2f cm\r\n",
+                gpio_read(TRACKING_SENSOR1_PIN),
+                gpio_read(TRACKING_SENSOR2_PIN),
+                (ticks * 0.03125) * 0.0343f);
         }
     }
 }
