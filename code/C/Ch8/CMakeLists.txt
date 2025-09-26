@@ -8,7 +8,7 @@ include(${CMAKE_SOURCE_DIR}/cmake/target-mcu.cmake)
 
 add_subdirectory("${CMAKE_SOURCE_DIR}/libstefi")
 # Executable
-add_executable(rohmi rohmi.c ultrasonic.c movement.c navigation.c)
+add_executable(rohmi rohmi.c ultrasonic.c movement.c navigation.c tracker.c)
 
 # Link prebuilt library
 target_link_libraries(rohmi libstefi)
