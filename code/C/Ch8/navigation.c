@@ -1,6 +1,7 @@
 #include "movement.h"
 #include "ultrasonic.h"
 #include "navigation.h"
+#include "tracker.h"
 
 #include <stdio.h>
 #include <libstefi/util.h>
@@ -8,6 +9,25 @@
 #define SAFE_DISTANCE 15   // cm: minimum clearance to move forward
 #define SCAN_DELAY    200  // ms: delay while turning to scan
 #define BACKOFF_DELAY 30  // ms: backup time
+
+void line_follower() {
+    int left = read_left_tracker();
+    int right = read_right_tracker();
+
+    if (left == 1 && right == 0) {
+        // Both sensors on black -> robot is centered
+        yaw_left();
+    }
+    else if (left == 0 && right == 1) {
+        yaw_right();
+    }
+    else if (left == 0 && right == 0) {
+        move_forward();
+    }
+    else {
+        move_forward();
+    }
+}
 
 void obstacle_avoidance() {
     int distance = ultrasonic_measure();
